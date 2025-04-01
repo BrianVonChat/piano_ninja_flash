@@ -1,0 +1,1907 @@
+/* CSS Styling with Piano Ninja theme */
+body {
+    font-family: 'Courier New', monospace;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #171724; /* Dark blue-black background */
+    color: #0f0; /* Neon green text */
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Add a wrapper for the game content to help with positioning */
+.game-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0;
+    min-height: calc(100vh - 60px); /* Subtract footer height */
+}
+
+/* Further optimize the logo */
+.logo-container {
+    position: relative;
+    width: 100%;
+    max-width: 120px; /* Further reduced size */
+    margin: 0 auto 5px;
+    text-align: center;
+    z-index: 1;
+}
+
+/* Move floating notes to be less distracting */
+.floating-note {
+    opacity: 0.5; /* Reduced from 0.7 */
+}
+
+/* Make the staff area more efficient (balancing space) */
+#staff-area {
+    margin: 10px auto; /* Center the block horizontally, keep vertical margin */
+    padding: 10px 15px 60px 15px; /* Reduced bottom padding from 80px */
+    background-color: rgba(14, 14, 26, 0.95);
+    border: 1px solid #3dff3d33;
+    border-radius: 4px;
+    min-height: 180px; /* Reduced min-height from 200px */
+    height: auto; /* Use auto height */
+    /* overflow: hidden; */ /* Keep overflow visible */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+    /* Ensure it doesn't exceed container width if SVG is wider */
+    max-width: 100%; 
+    box-sizing: border-box; /* Include padding and border in width calculation */
+}
+
+/* Make instructions more compact but still readable */
+.instructions {
+    padding-top: 8px; /* Reduced from 15px */
+    font-size: 0.8em; /* Further reduced size */
+}
+
+.instructions ul {
+    margin: 5px 0 0 0;
+    padding-left: 10px;
+}
+
+/* Background staff lines */
+.bg-staff {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0.2;
+    pointer-events: none;
+}
+.staff-line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background-color: #0f0;
+    box-shadow: 0 0 5px #0f0;
+}
+/* Animated staff note */
+@keyframes float {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+    50% { transform: translateY(-15px) rotate(5deg); opacity: 1; }
+    100% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+}
+.floating-note {
+    position: absolute;
+    color: #0f0;
+    font-size: 2.5em;
+    text-shadow: 0 0 5px #0f0;
+    animation: float 3s infinite ease-in-out;
+    opacity: 0.7;
+    z-index: -1;
+}
+
+h1 {
+    font-size: 1.8em; /* Further reduced from 2em */
+    margin-top: 0;
+    margin-bottom: 10px; /* Further reduced from 15px */
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
+    font-family: 'Courier New', monospace;
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0% { text-shadow: 0 0 10px #0f0, 0 0 20px #0f0; }
+    50% { text-shadow: 0 0 15px #0f0, 0 0 30px #0f0; }
+    100% { text-shadow: 0 0 10px #0f0, 0 0 20px #0f0; }
+}
+
+#game-container {
+    background-color: rgba(23, 23, 36, 0.9);
+    padding: 20px 30px; /* Reduced top/bottom padding from 30px to 20px */
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.2), inset 0 0 10px rgba(0, 255, 0, 0.1);
+    text-align: center;
+    width: 550px;
+    border: 1px solid #0f07;
+    position: relative;
+    z-index: 1;
+}
+
+ /* Style for placeholder text before staff renders */
+#staff-placeholder {
+    font-size: 1.5em;
+    color: #0f08;
+    text-shadow: 0 0 5px #0f0;
+}
+
+#feedback-area {
+    font-size: 1.2em;
+    margin-top: 5px; /* Reduced from 10px */
+    min-height: 1em; /* Reduced from 1.2em */
+    height: 1.2em; /* Fixed height to prevent layout shifts */
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.correct { 
+    color: #0f0; 
+    text-shadow: 0 0 10px #0f0;
+}
+.incorrect { 
+    color: #f00; 
+    text-shadow: 0 0 10px #f00;
+}
+.intermediate { 
+    color: #0ff; 
+    text-shadow: 0 0 10px #0ff;
+}
+
+#score-area {
+    font-size: 1.1em;
+    margin-top: 15px; /* Reduced from 20px */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: inline-block;
+    padding: 10px 20px;
+    border: 1px solid #0f05;
+    border-radius: 4px;
+    background-color: rgba(0, 255, 0, 0.05);
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.2);
+}
+
+/* Game Stats Bar styling */
+.game-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px; /* Reduced from 20px */
+}
+.stat-box {
+    flex: 1;
+    margin: 0 5px;
+    padding: 8px; /* Reduced from 10px */
+    border: 1px solid #0f07;
+    border-radius: 4px;
+    background-color: rgba(0, 255, 0, 0.05);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.stat-icon {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+    color: #0f0;
+    text-shadow: 0 0 5px #0f0;
+}
+.stat-label {
+    font-size: 0.9em; /* Increased from 0.7em */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+    color: #0f0;
+    font-weight: bold;
+}
+.stat-value {
+    font-family: monospace;
+    font-size: 1.3em; /* Increased from 1.1em */
+    font-weight: bold;
+    color: #0f0;
+    text-shadow: 0 0 5px #0f0;
+}
+
+#start-button {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1em;
+    padding: 10px 20px; /* Slightly smaller padding */
+    margin-top: 10px; /* Reduced from 15px */
+    cursor: pointer;
+    background-color: rgba(0, 255, 0, 0.1);
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    text-shadow: 0 0 5px #0f0;
+}
+
+#start-button:hover { 
+    background-color: rgba(0, 255, 0, 0.2); 
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+#start-button:active {
+    transform: scale(0.98);
+}
+
+/* Pause button styling */
+#pause-button {
+    font-family: 'Courier New', monospace;
+    font-size: 1em;
+    padding: 8px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    background-color: rgba(0, 255, 0, 0.1);
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    text-shadow: 0 0 5px #0f0;
+}
+
+#pause-button:hover {
+    background-color: rgba(0, 255, 0, 0.2); 
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+/* Pause overlay styling */
+#pause-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    backdrop-filter: blur(5px);
+}
+
+.pause-content {
+    background-color: rgba(23, 23, 36, 0.95);
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #0f0;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+    max-width: 400px;
+}
+
+.pause-content h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px #0f0;
+    letter-spacing: 4px;
+}
+
+.pause-content p {
+    margin-bottom: 25px;
+    color: #0f0a;
+    font-size: 1.1em;
+}
+
+#resume-button {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1em;
+    padding: 12px 25px;
+    cursor: pointer;
+    background-color: rgba(0, 255, 0, 0.1);
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    text-shadow: 0 0 5px #0f0;
+}
+
+#resume-button:hover {
+    background-color: rgba(0, 255, 0, 0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+.instructions {
+    font-size: 0.85em; /* Slightly smaller */
+    margin-top: 15px; /* Reduced from original */
+    text-align: left;
+    line-height: 1.3; /* Tighter line height */
+    border-top: 1px solid #0f05;
+    padding-top: 15px;
+}
+.instructions strong {
+    color: #0f0;
+    text-shadow: 0 0 5px #0f0;
+    letter-spacing: 1px;
+}
+.instructions ul { 
+    padding-left: 20px; 
+    list-style-type: none;
+}
+.instructions li {
+    margin-bottom: 5px; /* Tighter spacing */
+    position: relative;
+    padding-left: 15px;
+}
+.instructions li:before {
+    content: ">";
+    position: absolute;
+    left: 0;
+    color: #0f0;
+}
+/* Custom styling for the ABC.js output */
+svg {
+    filter: drop-shadow(0 0 1px rgba(0, 255, 0, 0.3));
+}
+/* Make the staff lines green */
+svg path {
+    stroke: #3dff3d !important;
+    stroke-width: 1.1px !important;
+}
+/* Make note heads and other elements green */
+svg g.abcjs-note path, 
+svg path.abcjs-stem {
+    fill: #3dff3d !important;
+    stroke: #3dff3d !important;
+    stroke-width: 1.1px !important;
+}
+/* Make note circles glow */
+svg ellipse {
+    fill: #3dff3d !important;
+    stroke: #3dff3d !important;
+    filter: drop-shadow(0 0 1px #0f0);
+}
+
+.middle-c-indicator {
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8em;
+    color: #0f0;
+    text-transform: uppercase;
+}
+
+/* Timer bar styling */
+#timer-container {
+    width: 100%;
+    height: 8px;
+    background-color: rgba(0, 255, 0, 0.1);
+    border-radius: 4px;
+    margin: 15px 0; /* Original spacing */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Type selector styling */
+#type-selector {
+    margin-bottom: 10px; /* Reduced from original */
+    font-size: 0.9em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#type-selector span {
+    margin-right: 10px;
+    color: #0f0;
+    text-shadow: 0 0 5px #0f0;
+    letter-spacing: 1px;
+}
+
+.type-btn {
+    font-family: 'Courier New', monospace;
+    padding: 8px 15px;
+    margin: 0 5px;
+    background-color: rgba(0, 255, 0, 0.1);
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9em;
+}
+
+.type-btn:hover {
+    background-color: rgba(0, 255, 0, 0.2);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.type-btn.active {
+    background-color: rgba(0, 255, 0, 0.3);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+}
+
+#timer-bar {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #0f0, #0ff);
+    transform-origin: left;
+    transition: transform 100ms linear;
+}
+
+#points-indicator {
+    position: absolute;
+    right: 0;
+    top: -20px;
+    font-size: 0.9em;
+    color: #0f0;
+}
+
+/* Points animation */
+@keyframes pointsFade {
+    0% { opacity: 0; transform: translateY(0); }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-20px); }
+}
+
+.points-popup {
+    position: absolute;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #0f0;
+    text-shadow: 0 0 5px #0f0;
+    animation: pointsFade 1.2s forwards;
+    pointer-events: none;
+}
+
+/* Interval button styles */
+#interval-buttons {
+    /* Styles for the overall container if needed, e.g., margin */
+    margin-top: 15px; 
+    margin-bottom: 15px;
+}
+
+#interval-buttons h3 {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    color: #0f0;
+    text-shadow: 0 0 5px #0f0;
+}
+
+#interval-buttons p {
+    margin-bottom: 10px;
+    font-size: 1em;
+    color: #0f0a;
+}
+
+/* Grid layout for interval choice buttons - Enhanced for dynamic count */
+.interval-choice-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px; /* Increased spacing between buttons */
+    margin-top: 15px;
+}
+
+.interval-choice-btn {
+    /* Base styling for interval buttons */
+    font-family: 'Courier New', monospace;
+    font-size: 1em; /* Slightly larger font */
+    padding: 12px 15px;
+    cursor: pointer;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    background-color: rgba(0, 255, 0, 0.05);
+    color: #0f0;
+    text-shadow: 0 0 5px #0f0;
+    text-align: center;
+    transition: all 0.2s;
+    flex: 0 1 auto; /* Don't stretch buttons */
+    min-width: 150px; /* Minimum width for each button */
+    max-width: 100%; /* Ensure buttons don't overflow container */
+}
+
+/* Adjust button sizes based on number of options */
+.interval-choice-buttons.options-2 .interval-choice-btn {
+    flex-basis: calc(50% - 15px); /* 2 options per row with gap */
+    min-width: 200px; /* Wider buttons for fewer options */
+}
+
+.interval-choice-buttons.options-3 .interval-choice-btn {
+    flex-basis: calc(33.333% - 15px); /* 3 options per row with gap */
+}
+
+.interval-choice-buttons.options-4 .interval-choice-btn, 
+.interval-choice-buttons.options-5 .interval-choice-btn {
+    flex-basis: calc(50% - 15px); /* 2 options per row for 4-5 options */
+}
+
+.interval-choice-btn:hover {
+    background-color: rgba(0, 255, 0, 0.15);
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.3);
+}
+
+/* Styling for selected/correct/incorrect states (from handleIntervalChoiceClick) */
+.interval-choice-btn.selected {
+    /* Maybe a thicker border or different background */
+    border-width: 2px;
+}
+.interval-choice-btn.correct {
+    background-color: rgba(0, 255, 0, 0.3);
+    border-color: #8f8;
+    color: #fff;
+    text-shadow: 0 0 8px #fff;
+}
+.interval-choice-btn.incorrect {
+    background-color: rgba(255, 0, 0, 0.3);
+    border-color: #f88;
+    color: #fcc;
+    text-shadow: none;
+}
+
+/* --- End Interval Buttons Styling --- */
+
+/* --- Additional CSS for the note guide overlay --- */
+#note-guide-btn {
+    font-family: 'Courier New', monospace;
+    font-size: 1em;
+    padding: 8px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    background-color: rgba(0, 255, 0, 0.1);
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    text-shadow: 0 0 5px #0f0;
+    margin-top: 10px; /* Assuming it should align with start button */
+}
+
+#note-guide-btn:hover {
+    background-color: rgba(0, 255, 0, 0.2); 
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+#note-guide-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    backdrop-filter: blur(5px);
+}
+
+.note-guide-content {
+    background-color: rgba(23, 23, 36, 0.95);
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #0f0;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.note-guide-content h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px #0f0;
+    letter-spacing: 4px;
+}
+
+#close-guide-btn {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1em;
+    padding: 12px 25px;
+    margin-top: 20px;
+    cursor: pointer;
+    background-color: rgba(0, 255, 0, 0.1);
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    text-shadow: 0 0 5px #0f0;
+}
+
+#close-guide-btn:hover {
+    background-color: rgba(0, 255, 0, 0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+/* Update styles for the clef symbols and note guide */
+.clef-label {
+    position: absolute;
+    left: 40px;
+    color: #0f0;
+    font-size: 4.5em; /* Even larger clef symbols */
+    text-shadow: 0 0 10px #0f0;
+    transform: translateY(-50%);
+}
+
+/* Completely redesign the staff guide layout */
+.staff-guide {
+    position: relative;
+    margin: 30px 0;
+    padding: 20px 0;
+    width: 100%;
+    height: 220px; /* Fixed height for consistent spacing */
+}
+
+.staff-line-guide {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #0f0;
+    box-shadow: 0 0 5px #0f0;
+}
+
+/* Create a consistent note position system */
+.note-positions {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 220px;
+}
+
+.note-marker {
+    position: absolute;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    color: #0f0;
+    font-size: 1.1em;
+    text-shadow: 0 0 5px #0f0;
+}
+
+.note-marker .circle {
+    width: 18px; /* Adjust size */
+    height: 18px;
+    border-radius: 50%;
+    background-color: #0f0;
+    margin-right: 8px;
+    box-shadow: 0 0 8px #0f0;
+    border: 1px solid #0005; /* Optional subtle border */
+    position: relative; /* For positioning the ledger line */
+}
+.note-marker .ledger-line {
+    position: absolute;
+    width: 30px; /* Width of the ledger line */
+    height: 2px;
+    background-color: #0f0;
+    box-shadow: 0 0 3px #0f0;
+    left: -15px; /* Move further left */
+    right: auto;
+    top: 9px; /* Center on the note circle */
+    transform: none;
+    z-index: -1; /* Behind the note circle */
+}
+.middle-c-marker {
+    color: #0ff; /* Highlight Middle C */
+}
+.middle-c-marker .circle {
+    background-color: #0ff;
+    box-shadow: 0 0 8px #0ff;
+}
+.middle-c-marker .ledger-line {
+    background-color: #0ff;
+    box-shadow: 0 0 3px #0ff;
+    left: -15px; /* Match the general ledger line position */
+    top: 9px; /* Center on the note circle */
+}
+
+.clef-title {
+    font-size: 1.3em;
+    margin: 20px 0 15px;
+    color: #0f0;
+    text-shadow: 0 0 5px #0f0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.guide-section {
+    border-top: 1px solid #0f05;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+.guide-explanation {
+    text-align: left;
+    line-height: 1.6;
+    margin-top: 15px;
+    color: #0f0d;
+}
+
+.guide-explanation p {
+    margin-bottom: 10px;
+}
+
+.guide-explanation strong {
+    color: #0f0;
+    text-shadow: 0 0 2px #0f0;
+}
+
+/* Piano keyboard styling */
+.piano-keyboard {
+    display: flex;
+    position: relative;
+    height: 120px;
+    margin: 30px auto;
+    width: 90%;
+    max-width: 700px;
+}
+
+.piano-white-key {
+    flex: 1;
+    background-color: #f5f5f5;
+    border: 1px solid #171724;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding-bottom: 10px;
+}
+
+.piano-black-key {
+    position: absolute;
+    width: 60%;
+    height: 60%;
+    background-color: #111;
+    z-index: 2;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding-bottom: 5px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+}
+
+.key-note-name {
+    font-weight: bold;
+    color: #111;
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.key-shortcut {
+    color: #555;
+    font-size: 12px;
+}
+
+.black-key-note-name {
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 3px;
+    font-size: 12px;
+}
+
+.black-key-shortcut {
+    color: #ccc;
+    font-size: 9px;
+}
+
+.middle-c-indicator {
+    color: #ff0;
+}
+
+.middle-c-indicator .circle {
+    background-color: #ff0; 
+    box-shadow: 0 0 10px #ff0;
+}
+
+/* --- NEW Note Guide Styles --- */
+
+.guide-section {
+    border-top: 1px solid #0f05;
+    padding-top: 20px;
+    margin-top: 20px;
+    position: relative; /* Needed for positioning children */
+}
+.clef-title {
+    font-size: 1.3em;
+    margin: 0 0 15px; /* Adjusted margin */
+    color: #0f0;
+    text-shadow: 0 0 5px #0f0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: left; /* Align title left */
+}
+
+.staff-container {
+    position: relative;
+    width: 90%; /* Adjust width as needed */
+    height: 120px; /* Height for the 5 lines + space above/below */
+    margin: 30px auto; /* Center staff and add vertical margin */
+    /* background-color: rgba(0,255,0,0.03); */ /* Optional: Debug background */
+}
+
+.staff-line-guide {
+    position: absolute;
+    left: 10%; /* Indent lines slightly */
+    right: 0;
+    height: 2px;
+    background-color: #0f0;
+    box-shadow: 0 0 3px #0f0;
+    z-index: 1; /* Below notes */
+}
+
+.clef-symbol {
+    position: absolute;
+    left: 0; /* Position clef at the start */
+    font-size: 6em; /* Adjust size */
+    color: #0f0;
+    text-shadow: 0 0 8px #0f0;
+    z-index: 2; /* Above lines */
+    line-height: 1;
+}
+
+.clef-symbol.treble {
+     /* Vertically center the G-clef curl around the 2nd line from bottom (70%) */
+    top: 70%;
+    transform: translateY(-60%); /* Fine-tune vertical alignment */
+}
+.clef-symbol.bass {
+    /* Vertically center the F-clef dots around the 2nd line from top (30%) */
+    top: 30%;
+     transform: translateY(-50%); /* Fine-tune vertical alignment */
+}
+
+.note-marker {
+    position: absolute;
+    transform: translate(-50%, -50%); /* Center marker on its top/left coordinates */
+    display: flex;
+    align-items: center;
+    color: #0f0;
+    font-size: 1em; /* Adjust font size */
+    text-shadow: 0 0 5px #0f0;
+    z-index: 3; /* Above clef and lines */
+    white-space: nowrap; /* Prevent name wrapping */
+}
+
+.note-marker .circle {
+    width: 18px; /* Adjust size */
+    height: 18px;
+    border-radius: 50%;
+    background-color: #0f0;
+    margin-right: 8px;
+    box-shadow: 0 0 8px #0f0;
+    border: 1px solid #0005; /* Optional subtle border */
+    position: relative; /* For positioning the ledger line */
+}
+.note-marker .ledger-line {
+    position: absolute;
+    width: 30px; /* Wider than the circle */
+    height: 2px;
+    background-color: #0f0;
+    box-shadow: 0 0 3px #0f0;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); /* Center on the circle */
+    z-index: -1; /* Behind the circle */
+}
+.note-marker .note-name {
+    font-weight: bold;
+}
+
+.note-marker .ledger-line {
+    position: absolute;
+    width: 30px; /* Width of the ledger line */
+    height: 2px;
+    background-color: #0f0;
+    box-shadow: 0 0 3px #0f0;
+    left: 0; /* Start at the left edge of the marker */
+    right: auto;
+    top: 9px; /* Center on the note circle */
+    transform: none;
+    z-index: -1; /* Behind the note circle */
+}
+.middle-c-marker {
+    color: #0ff; /* Highlight Middle C */
+}
+.middle-c-marker .circle {
+     background-color: #0ff;
+     box-shadow: 0 0 8px #0ff;
+}
+
+.middle-c-marker .ledger-line {
+    background-color: #0ff;
+    box-shadow: 0 0 3px #0ff;
+    left: 0; /* Start at the left edge of the marker */
+    top: 9px; /* Center on the note circle */
+}
+
+.guide-explanation {
+    text-align: left;
+    line-height: 1.7; /* Increased line height */
+    margin-top: 15px;
+    color: #0f0d;
+    padding-left: 10px; /* Indent text */
+}
+
+.guide-explanation p {
+    margin-bottom: 12px; /* Spacing between paragraphs */
+}
+.guide-explanation strong {
+    color: #0f0;
+    text-shadow: 0 0 2px #0f0;
+    font-weight: bold;
+}
+.guide-explanation em {
+    color: #0ff; /* Highlight mnemonics */
+    font-style: normal;
+    font-weight: bold;
+}
+.guide-explanation br {
+     display: block; /* Ensure <br> creates space */
+     margin-bottom: 0.5em;
+}
+/* --- End NEW Note Guide Styles --- */
+/* --- Piano Keyboard Guide Styles --- */
+.piano-keyboard-guide {
+    width: 100%;
+    max-width: 300px;
+    margin: 20px auto;
+    border: 1px solid #000;
+}
+
+.piano-keyboard {
+    display: flex;
+    height: 120px;
+    position: relative;
+    background-color: #fff;
+}
+.white-key {
+    flex: 1;
+    background: #fff;
+    border-right: 1px solid #000;
+    position: relative;
+    z-index: 1;
+    height: 100%;
+}
+.white-key:last-child {
+    border-right: none;
+}
+.black-key-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    pointer-events: none;
+}
+.black-key {
+    position: absolute;
+    width: 8%;
+    height: 65%;
+    background: #000;
+    top: 0;
+}
+/* Position black keys correctly in the 2-3-2 pattern */
+.key-c-sharp {
+    left: 14.3%;
+}
+.key-d-sharp {
+    left: 28.6%;
+}
+.key-f-sharp {
+    left: 57.1%;
+}
+.key-g-sharp {
+    left: 71.4%;
+}
+.key-a-sharp {
+    left: 85.7%;
+}
+.key-name {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 14px;
+    color: #000;
+    font-family: Arial, sans-serif;
+}
+
+.explanation-block h2 {
+    border-bottom: 1px solid #5cff5c;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+/* Styles for interval choices */
+.interval-choices {
+    margin: 20px 0;
+}
+
+.interval-choice-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px; /* Spacing between buttons */
+    margin-top: 10px;
+}
+
+.interval-choice-btn {
+    padding: 12px 20px;
+    font-size: 16px;
+    background-color: #333;
+    color: #5cff5c;
+    border: 2px solid #5cff5c;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-width: 180px;
+    margin-bottom: 10px;
+}
+
+.interval-choice-btn:hover {
+    background-color: #444;
+    transform: translateY(-2px);
+}
+
+.interval-choice-btn.selected {
+    background-color: #5cff5c;
+    color: #000;
+}
+
+.interval-choice-btn.correct {
+    background-color: #00ff00;
+    color: #000;
+    border-color: #00ff00;
+}
+
+.interval-choice-btn.incorrect {
+    background-color: #ff3333;
+    color: #fff;
+    border-color: #ff3333;
+}
+
+@media (max-width: 600px) {
+    .interval-choice-btn {
+        min-width: 150px;
+        padding: 10px 15px;
+    }
+}
+
+/* Toggle for keyboard display */
+/* ... existing code ... */
+
+/* Logo styling - even more compact */
+.logo-container {
+    position: relative;
+    width: 100%;
+    max-width: 150px; /* Further reduced from 180px */
+    margin: 0 auto 5px; /* Further reduced bottom margin from 10px to 5px */
+    text-align: center;
+    z-index: 1;
+}
+.logo-container img {
+    width: 100%;
+    height: auto;
+}
+
+/* End Game button styling (similar to pause) */
+#end-game-btn {
+    font-family: 'Courier New', monospace;
+    font-size: 1em;
+    padding: 8px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    background-color: rgba(255, 0, 0, 0.2); /* Reddish background */
+    color: #f88; /* Lighter red text */
+    border: 1px solid #f88;
+    border-radius: 4px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+    text-shadow: 0 0 5px #f88;
+}
+
+#end-game-btn:hover {
+    background-color: rgba(255, 0, 0, 0.3); 
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+}
+
+/* Scorecard Overlay Styling */
+#scorecard-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); /* More opaque background */
+    display: flex; /* Use flex for centering */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it's on top */
+    backdrop-filter: blur(5px);
+}
+
+.scorecard-content {
+    background-color: rgba(23, 23, 36, 0.95);
+    padding: 40px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #0f0;
+    box-shadow: 0 0 40px rgba(0, 255, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+}
+
+.scorecard-content h2 {
+    font-size: 2.2em;
+    margin-bottom: 25px;
+    color: #0f0;
+    text-shadow: 0 0 10px #0f0;
+    letter-spacing: 4px;
+}
+
+.scorecard-stats p {
+    font-size: 1.2em;
+    margin: 10px 0;
+    color: #0f0c;
+    text-align: left;
+}
+
+.scorecard-stats strong {
+    color: #0f0;
+    min-width: 120px; /* Align labels */
+    display: inline-block;
+}
+
+#play-again-btn {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1em;
+    padding: 12px 30px;
+    margin-top: 30px;
+    cursor: pointer;
+    background-color: rgba(0, 255, 0, 0.1);
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    text-shadow: 0 0 5px #0f0;
+}
+
+#play-again-btn:hover {
+    background-color: rgba(0, 255, 0, 0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+/* Pause overlay styling */
+#pause-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    backdrop-filter: blur(5px);
+}
+
+.pause-content {
+    background-color: rgba(23, 23, 36, 0.95);
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #0f0;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+    max-width: 400px;
+}
+
+.pause-content h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px #0f0;
+    letter-spacing: 4px;
+}
+
+.pause-content p {
+    margin-bottom: 25px;
+    color: #0f0a;
+    font-size: 1.1em;
+}
+
+#resume-button {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1em;
+    padding: 12px 25px;
+    cursor: pointer;
+    background-color: rgba(0, 255, 0, 0.1);
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    text-shadow: 0 0 5px #0f0;
+}
+
+#resume-button:hover {
+    background-color: rgba(0, 255, 0, 0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+/* Setup Modal Overlay Styling */
+#setup-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); 
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.setup-modal-content {
+    background-color: rgba(23, 23, 36, 0.95);
+    padding: 30px 40px;
+    border-radius: 8px;
+    text-align: left; /* Align labels/inputs left */
+    border: 1px solid #0f0;
+    box-shadow: 0 0 40px rgba(0, 255, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    color: #0f0; /* Default text color */
+}
+
+.setup-modal-content h2 {
+    font-size: 2em;
+    margin-bottom: 25px;
+    color: #0f0;
+    text-shadow: 0 0 10px #0f0;
+    letter-spacing: 3px;
+    text-align: center;
+}
+
+.setup-section {
+    margin-bottom: 20px;
+}
+
+.setup-section label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 1em;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.setup-section input[type="text"] {
+    width: 100%;
+    padding: 8px 10px;
+    background-color: rgba(14, 14, 26, 0.95);
+    border: 1px solid #3dff3d33;
+    border-radius: 4px;
+    color: #0f0;
+    font-family: monospace;
+    font-size: 1.1em;
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.setup-section .radio-group {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.setup-section input[type="radio"] {
+    margin-right: 8px;
+    appearance: none; /* Custom radio button */
+    width: 16px;
+    height: 16px;
+    border: 2px solid #0f0;
+    border-radius: 50%;
+    background-color: rgba(14, 14, 26, 0.95);
+    cursor: pointer;
+    position: relative;
+    top: 2px;
+}
+
+.setup-section input[type="radio"]:checked {
+    background-color: #0f0;
+    box-shadow: 0 0 5px #0f0;
+}
+
+.setup-section .radio-group label {
+    font-size: 1em;
+    font-weight: normal;
+    margin-bottom: 0; /* Override default label margin */
+    cursor: pointer;
+    display: inline-block; /* Keep label next to radio */
+}
+
+#begin-game-btn {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1em;
+    padding: 12px 30px;
+    margin-top: 10px; /* Adjusted margin */
+    cursor: pointer;
+    background-color: rgba(0, 255, 0, 0.1);
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    text-shadow: 0 0 5px #0f0;
+    display: block; /* Make button full width */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#begin-game-btn:hover {
+    background-color: rgba(0, 255, 0, 0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+/* --- Main Game Controls --- */
+#main-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Vertically align buttons */
+    gap: 15px; /* Spacing between buttons */
+    margin-top: 20px; /* Space above controls */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    min-height: 42px; /* Match button height */
+    position: relative; /* For proper alignment */
+}
+
+/* Reset any button-specific styles that might affect layout */
+#setup-game-btn, #pause-button, #end-game-btn, #note-guide-btn {
+    margin: 0;
+    font-size: 0.95em; /* Ensure all buttons have identical font size */
+    height: 42px; /* Ensure consistent height */
+    line-height: 1; /* Consistent line height */
+}
+
+/* Base style for control buttons */
+.control-btn {
+    font-family: 'Courier New', monospace;
+    font-size: 0.95em; /* Consistent font size */
+    padding: 0 20px; /* Horizontal padding only */
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    border: 1px solid;
+    box-shadow: 0 0 10px;
+    text-shadow: 0 0 5px;
+    margin: 0; /* Remove individual margins */
+    min-width: 140px; /* Ensure consistent width */
+    width: auto; /* Allow for text content */
+    height: 42px; /* Fixed height for consistency */
+    text-align: center; /* Center text */
+    display: inline-flex; /* Use flexbox for better alignment */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    box-sizing: border-box; /* Include padding in dimensions */
+    line-height: 1; /* Consistent line height */
+    position: relative; /* Needed for consistent positioning */
+    vertical-align: middle; /* Ensure consistent baseline */
+}
+
+/* Base hover effect for all control buttons */
+.control-btn:hover {
+    box-shadow: 0 0 15px;
+    transform: translateY(-1px); /* Subtle lift effect */
+}
+
+/* Specific Button Colors Only - No Layout/Sizing Properties */
+#setup-game-btn {
+    background-color: rgba(0, 200, 255, 0.1); /* Cyan tint */
+    color: #0cf;
+    border-color: #0cf;
+    box-shadow: 0 0 10px rgba(0, 200, 255, 0.2);
+    text-shadow: 0 0 5px #0cf;
+}
+#setup-game-btn:hover {
+    background-color: rgba(0, 200, 255, 0.2);
+    box-shadow: 0 0 15px rgba(0, 200, 255, 0.4);
+    /* No duplicate layout properties */
+}
+
+#pause-button {
+    background-color: rgba(0, 255, 0, 0.1);
+    color: #0f0;
+    border-color: #0f0;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    text-shadow: 0 0 5px #0f0;
+}
+#pause-button:hover {
+    background-color: rgba(0, 255, 0, 0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+    /* No duplicate layout properties */
+}
+
+#end-game-btn {
+    background-color: rgba(255, 0, 0, 0.2);
+    color: #f88;
+    border-color: #f88;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+    text-shadow: 0 0 5px #f88;
+}
+#end-game-btn:hover {
+    background-color: rgba(255, 0, 0, 0.3);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    /* No duplicate layout properties */
+}
+
+#note-guide-btn {
+    background-color: rgba(0, 255, 0, 0.1);
+    color: #0f0;
+    border-color: #0f0;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    text-shadow: 0 0 5px #0f0;
+}
+#note-guide-btn:hover {
+    background-color: rgba(0, 255, 0, 0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+    /* No duplicate layout properties */
+}
+
+/* --- End Main Game Controls --- */
+
+.instructions {
+    font-size: 0.85em; /* Slightly smaller */
+    margin-top: 15px; /* Reduced from original */
+    text-align: left;
+    line-height: 1.3; /* Tighter line height */
+    border-top: 1px solid #0f05;
+    padding-top: 15px;
+}
+.instructions strong {
+    color: #0f0;
+    text-shadow: 0 0 5px #0f0;
+    letter-spacing: 1px;
+}
+.instructions ul { 
+    padding-left: 20px; 
+    list-style-type: none;
+}
+.instructions li {
+    margin-bottom: 5px; /* Tighter spacing */
+    position: relative;
+    padding-left: 15px;
+}
+.instructions li:before {
+    content: ">";
+    position: absolute;
+    left: 0;
+    color: #0f0;
+}
+
+/* Footer styling */
+footer {
+    text-align: center;
+    width: 100%;
+    padding: 15px 0;
+    font-size: 0.9em;
+    color: #0f0;
+    text-shadow: 0 0 5px #0f0;
+    height: 30px;
+    position: relative;
+    margin-top: 20px;
+    clear: both;
+    background-color: rgba(23, 23, 36, 0.9); /* Match game container background */
+}
+
+/* Mobile responsiveness - Landscape mode */
+@media (max-width: 812px) and (max-height: 450px) {
+    /* Game wrapper optimization */
+    .game-wrapper {
+        min-height: unset;
+        padding: 0;
+    }
+
+    /* Game container optimization */
+    #game-container {
+        width: auto;
+        max-width: 95%;
+        padding: 10px;
+        margin: 0 auto;
+    }
+
+    /* Logo optimization */
+    .logo-container {
+        max-width: 80px;
+        margin-bottom: 2px;
+    }
+
+    /* Stats bar optimization */
+    .game-stats {
+        margin-bottom: 5px;
+    }
+    
+    .stat-box {
+        padding: 5px;
+    }
+    
+    .stat-icon {
+        font-size: 1em;
+        margin-bottom: 2px;
+    }
+    
+    .stat-label {
+        font-size: 0.7em;
+        margin-bottom: 1px;
+    }
+    
+    .stat-value {
+        font-size: 1em;
+    }
+
+    /* Staff area optimization */
+    #staff-area {
+        margin: 5px auto;
+        padding: 5px 10px 30px 10px;
+        min-height: 130px;
+    }
+    
+    /* ABC.js notation sizing optimizations */
+    svg {
+        max-width: 100% !important;
+        height: auto !important;
+        transform: scale(0.9);
+        transform-origin: center top;
+    }
+    
+    /* Make ABC.js elements more visible on small screens */
+    svg path {
+        stroke-width: 1.3px !important;
+    }
+    
+    svg g.abcjs-note path, 
+    svg path.abcjs-stem {
+        stroke-width: 1.3px !important;
+    }
+    
+    /* Ensure the music staff is centered */
+    .abcjs-container {
+        display: flex;
+        justify-content: center;
+        width: 100% !important;
+    }
+    
+    /* Target the size of individual notes */
+    .abcjs-note {
+        transform: scale(1.1);
+    }
+
+    /* Control buttons optimization */
+    #main-controls {
+        margin-top: 10px;
+        gap: 8px;
+    }
+    
+    .control-btn {
+        min-width: 100px;
+        height: 35px;
+        font-size: 0.8em;
+        padding: 0 10px;
+    }
+
+    /* Feedback area optimization */
+    #feedback-area {
+        font-size: 1em;
+        min-height: 0.8em;
+        height: 1em;
+        margin-top: 2px;
+    }
+
+    /* Timer container optimization */
+    #timer-container {
+        margin: 8px 0;
+        height: 6px;
+    }
+
+    /* Instructions optimization */
+    .instructions {
+        font-size: 0.7em;
+        margin-top: 8px;
+        padding-top: 8px;
+        line-height: 1.2;
+    }
+    
+    .instructions li {
+        margin-bottom: 2px;
+    }
+
+    /* Footer optimization */
+    footer {
+        padding: 8px 0;
+        font-size: 0.8em;
+        height: 20px;
+        margin-top: 5px;
+    }
+
+    /* Interval buttons optimization */
+    .interval-choice-btn {
+        padding: 8px 10px;
+        font-size: 0.8em;
+        min-width: 100px;
+    }
+
+    /* Note guide overlay optimization */
+    .note-guide-content {
+        padding: 15px;
+        max-height: 95vh;
+    }
+    
+    .guide-section {
+        padding-top: 10px;
+        margin-top: 10px;
+    }
+    
+    .clef-title {
+        font-size: 1.1em;
+        margin: 0 0 8px;
+    }
+    
+    .staff-container {
+        height: 90px;
+        margin: 15px auto;
+    }
+    
+    .note-marker .circle {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .guide-explanation {
+        font-size: 0.8em;
+        line-height: 1.5;
+    }
+
+    /* Setup modal optimization */
+    .setup-modal-content {
+        padding: 15px 20px;
+    }
+    
+    .setup-modal-content h2 {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+    }
+    
+    .setup-section {
+        margin-bottom: 10px;
+    }
+    
+    .setup-section label {
+        margin-bottom: 4px;
+        font-size: 0.9em;
+    }
+    
+    .setup-section input[type="text"] {
+        padding: 5px 8px;
+        font-size: 0.9em;
+    }
+    
+    .setup-section .radio-group {
+        margin-bottom: 4px;
+    }
+    
+    #begin-game-btn {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+
+    /* Scorecard optimization */
+    .scorecard-content {
+        padding: 20px;
+    }
+    
+    .scorecard-content h2 {
+        font-size: 1.6em;
+        margin-bottom: 15px;
+    }
+    
+    .scorecard-stats p {
+        font-size: 0.9em;
+        margin: 5px 0;
+    }
+    
+    #play-again-btn {
+        font-size: 0.9em;
+        padding: 8px 20px;
+        margin-top: 15px;
+    }
+    
+    /* Ensure background elements don't interfere with gameplay */
+    .bg-staff .floating-note {
+        opacity: 0.3; /* Make floating notes less visible */
+    }
+    
+    /* Make all buttons more touch-friendly */
+    button {
+        min-height: 35px; /* Minimum touch target size */
+    }
+}
+
+/* Very small screens (iPhone SE landscape or similar) */
+@media (max-width: 667px) and (max-height: 375px) {
+    /* Optimize game container further */
+    #game-container {
+        padding: 5px;
+    }
+    
+    /* Reduce heading size */
+    h1 {
+        font-size: 1.4em;
+        margin-bottom: 5px;
+    }
+    
+    /* Make staff area even more compact */
+    #staff-area {
+        min-height: 100px;
+        padding: 2px 5px 20px 5px;
+    }
+    
+    /* Further optimize stats */
+    .game-stats {
+        margin-bottom: 3px;
+    }
+    
+    .stat-box {
+        padding: 3px;
+    }
+    
+    .stat-icon {
+        font-size: 0.9em;
+        margin-bottom: 1px;
+    }
+    
+    /* Optimize buttons for very small screens */
+    .control-btn {
+        min-width: 80px;
+        font-size: 0.7em;
+        padding: 0 8px;
+        height: 30px;
+    }
+    
+    /* Make the instructions more compact */
+    .instructions {
+        display: none; /* Hide instructions on very small screens */
+    }
+    
+    /* Show concise instructions instead */
+    #game-container::after {
+        content: "Notes: A-G | Shift+letter for sharps/flats";
+        display: block;
+        font-size: 0.7em;
+        color: #0f0;
+        margin-top: 5px;
+        text-align: center;
+    }
+    
+    /* Optimize overlay content for very small screens */
+    .scorecard-content, 
+    .pause-content, 
+    .note-guide-content,
+    .setup-modal-content {
+        max-width: 90%;
+        padding: 10px;
+    }
+    
+    .scorecard-content h2, 
+    .pause-content h2, 
+    .note-guide-content h2,
+    .setup-modal-content h2 {
+        font-size: 1.3em;
+        margin-bottom: 10px;
+    }
+    
+    /* Note guide optimizations for very small screens */
+    .staff-container {
+        height: 70px;
+        margin: 10px auto;
+    }
+    
+    .clef-symbol {
+        font-size: 4em;
+    }
+    
+    .note-marker {
+        font-size: 0.7em;
+    }
+    
+    .note-marker .circle {
+        width: 10px;
+        height: 10px;
+        margin-right: 5px;
+    }
+    
+    /* Optimize piano keyboard display */
+    .piano-keyboard-guide img {
+        max-width: 90% !important;
+    }
+    
+    /* Setup modal radio buttons optimization */
+    .setup-section .radio-group {
+        display: inline-flex;
+        margin-right: 10px;
+    }
+    
+    /* Optimize footer */
+    footer {
+        padding: 5px 0;
+        font-size: 0.7em;
+        height: 15px;
+    }
+}
+
+/* Mobile portrait mode - Add a rotation suggestion */
+@media (max-width: 450px) and (min-height: 500px) {
+    body::before {
+        content: "Rotate your device for best experience";
+        display: block;
+        position: fixed;
+        top: 10px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        background-color: rgba(0, 255, 0, 0.2);
+        color: #0f0;
+        padding: 5px;
+        font-size: 0.9em;
+        z-index: 1000;
+        text-shadow: 0 0 5px #0f0;
+    }
+}

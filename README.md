@@ -31,7 +31,7 @@ A cyberpunk-themed music theory training game designed to help students learn no
 ## 🚀 Setup Options
 
 ### Play Online
-Visit the game at: [https://[your-username].github.io/piano-ninja-flash/](https://[your-username].github.io/piano-ninja-flash/)
+Visit the game at: [https://brianvonchat.github.io/piano-ninja-flash/](https://brianvonchat.github.io/piano-ninja-flash/)
 
 ### Run Locally
 1. Clone this repository
@@ -62,4 +62,4 @@ Piano Ninja Flash was created to make music theory practice engaging and accessi
 
 ---
 
-*Made with ♪♫ by [Your Name]* 
+*Made with ♪♫ by Brian Wahlstrom* 
