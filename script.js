@@ -406,23 +406,39 @@ function startGame() {
     // Apply proper ordering for mobile flexbox layout
     if (window.matchMedia("(max-width: 812px) and (orientation: landscape)").matches) {
         // Staff is already first by default
+        const staffArea = document.getElementById('staff-area');
+        if (staffArea) {
+            staffArea.style.order = '0';
+        }
         
-        // Order 1: Mobile keyboard (after staff)
+        // Order 1: Timer container (right after staff)
+        const timerContainer = document.getElementById('timer-container');
+        if (timerContainer) {
+            timerContainer.style.display = 'block';
+            timerContainer.style.order = '1';
+            // Ensure timer is more visible on mobile
+            timerContainer.style.width = '98%';
+            timerContainer.style.margin = '0 auto 5px';
+            timerContainer.style.height = '8px';
+            
+            // Make sure the timer bar is properly styled
+            if (timerBar) {
+                timerBar.style.transform = 'scaleX(1)';
+                timerBar.style.display = 'block';
+            }
+        }
+        
+        // Order 2: Mobile keyboard (after timer)
         const mobileKeyboard = document.getElementById('mobile-keyboard-container');
         if (mobileKeyboard) {
             mobileKeyboard.style.display = 'block';
-            mobileKeyboard.style.order = '1';
+            mobileKeyboard.style.order = '2';
         }
         
-        // Order 2: Controls
+        // Order 3: Controls
         const mainControls = document.getElementById('main-controls');
         if (mainControls) {
-            mainControls.style.order = '2';
-        }
-        
-        // Order 3: Timer
-        if (timerContainer) {
-            timerContainer.style.order = '3';
+            mainControls.style.order = '3';
         }
         
         // Order 4: Feedback
@@ -2080,21 +2096,43 @@ function handleOrientationChange() {
                 gameContainer.style.flexDirection = 'column';
             }
             
+            // Set staff order
+            const staffArea = document.getElementById('staff-area');
+            if (staffArea) {
+                staffArea.style.order = '0';
+            }
+            
+            // Position timer above keyboard
+            const timerContainer = document.getElementById('timer-container');
+            if (timerContainer) {
+                timerContainer.style.display = 'block';
+                timerContainer.style.order = '1';
+                timerContainer.style.width = '98%';
+                timerContainer.style.margin = '0 auto 5px';
+            }
+            
             // Show keyboard if game is active
             if (mobileKeyboard && gameActive) {
                 mobileKeyboard.style.display = 'block';
+                mobileKeyboard.style.order = '2';
             }
             
             // Ensure controls are visible and properly placed
             const mainControls = document.getElementById('main-controls');
             if (mainControls) {
-                mainControls.style.order = '2';
+                mainControls.style.order = '3';
             }
             
             // Make sure the feedback area is properly positioned
             const feedbackArea = document.getElementById('feedback-area');
             if (feedbackArea) {
                 feedbackArea.style.order = '4';
+            }
+            
+            // Position interval buttons at the bottom
+            const intervalButtons = document.getElementById('interval-buttons');
+            if (intervalButtons) {
+                intervalButtons.style.order = '5';
             }
             
             // Hide instructions to save space
