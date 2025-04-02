@@ -1077,6 +1077,12 @@ function nextItem() {
         expectedRootKey = randomChord.root.charAt(0).toLowerCase();
         isMinorChord = randomChord.quality === 'minor'; // Keep this for reference but we don't use it anymore
 
+        // Special log for Eb and Ab chords to debug confusion
+        if (randomChord.root === 'Eb' || randomChord.root === 'Ab') {
+            console.log(`IMPORTANT - Selected a ${randomChord.root} ${randomChord.quality} chord`);
+            console.log(`Root note letter is "${expectedRootKey}"`);
+        }
+
         console.log(`Next: Chord ${randomChord.root} ${randomChord.quality} on ${chordPlacement}, ` +
                   `Expect root note: ${expectedRootKey}`); // Updated to only show root note
     }
@@ -2555,6 +2561,7 @@ function checkChordAnswer(rootNote, isMinor, fullNote = null, enharmonic = null)
     
     // Get expected chord information
     const expectedRoot = currentItem.value.root;
+    // Fix root letter extraction to always use first character only
     const expectedRootLetter = expectedRoot.charAt(0).toLowerCase();
     const requiresAccidental = expectedRoot.includes('#') || expectedRoot.includes('b');
     
@@ -2565,17 +2572,55 @@ function checkChordAnswer(rootNote, isMinor, fullNote = null, enharmonic = null)
     console.log(`Checking chord root: ${rootNote}/${fullNote} against expected: ${expectedRoot}`);
     console.log(`Expected root letter: ${expectedRootLetter}`);
     
+    // Add additional special handling for Ab vs Eb confusion
+    const isEbChord = expectedRoot === 'Eb' || expectedRoot === 'E♭';
+    const isAbChord = expectedRoot === 'Ab' || expectedRoot === 'A♭';
+    
     // Special handling for mobile keyboard with full note info
     if (fullNote) {
         // Remove octave suffix for comparison
         const inputWithoutOctave = fullNote.replace(/\d+$/, '');
         const enharmonicWithoutOctave = enharmonic ? enharmonic.replace(/\d+$/, '') : '';
         
-        // Add extra logging to debug E and B keys specifically
-        if (inputWithoutOctave === 'E4' || inputWithoutOctave === 'B4') {
-            console.log(`Processing E or B key input: ${inputWithoutOctave}`);
-            console.log(`Expected root: ${expectedRoot}, letter: ${expectedRootLetter}`);
-            console.log(`Input first char: ${inputWithoutOctave.charAt(0).toLowerCase()}`);
+        // Add debug logging for chord identification issues
+        console.log(`Chord checking: Input=${inputWithoutOctave}, Enharmonic=${enharmonicWithoutOctave}, Expected=${expectedRoot}`);
+        
+        // Special debug for E and B keys (especially for Eb/Ab issue)
+        if (inputWithoutOctave === 'E4' || inputWithoutOctave === 'B4' || 
+            expectedRoot === 'Eb' || expectedRoot === 'Ab') {
+            console.log(`[SPECIAL CHECKING] Input: ${inputWithoutOctave}`);
+            console.log(`[SPECIAL CHECKING] Expected root: ${expectedRoot}, letter: ${expectedRootLetter}`);
+            console.log(`[SPECIAL CHECKING] First char comparison: ${inputWithoutOctave.charAt(0).toLowerCase()} vs ${expectedRootLetter}`);
+        }
+        
+        // Special handling for Eb vs Ab issue
+        if (expectedRoot === 'Eb' && inputWithoutOctave.charAt(0).toLowerCase() === 'e') {
+            // If the expected root is Eb and user pressed E, it's correct
+            console.log("Special case: Eb chord detected with E key press - marking correct");
+            correctAnswer({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
+            return;
+        }
+        
+        // Special handling for Ab chord
+        if (expectedRoot === 'Ab' && inputWithoutOctave.charAt(0).toLowerCase() === 'a') {
+            // If the expected root is Ab and user pressed A, it's correct
+            console.log("Special case: Ab chord detected with A key press - marking correct");
+            correctAnswer({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
+            return;
+        }
+        
+        // Prevent mistaking E key press for Ab chord
+        if (expectedRoot === 'Ab' && inputWithoutOctave.charAt(0).toLowerCase() === 'e') {
+            console.log("Wrong key pressed: E key for Ab chord");
+            incorrectAnswer(`Incorrect. Expected root note '${expectedRoot}' (A flat), not E.`);
+            return;
+        }
+        
+        // Prevent mistaking A key press for Eb chord
+        if (expectedRoot === 'Eb' && inputWithoutOctave.charAt(0).toLowerCase() === 'a') {
+            console.log("Wrong key pressed: A key for Eb chord");
+            incorrectAnswer(`Incorrect. Expected root note '${expectedRoot}' (E flat), not A.`);
+            return;
         }
         
         // Direct match checks (case insensitive for root letter)
