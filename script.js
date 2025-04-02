@@ -2327,6 +2327,16 @@ function initMobilePianoKeyboard() {
             const note = this.getAttribute('data-note');
             const enharmonic = this.getAttribute('data-enharmonic');
             
+            // Special debug for E and B keys
+            if (note && (note.startsWith('E') || note.startsWith('B'))) {
+                console.log(`[DEBUG E/B] Touched ${note} key with enharmonic: ${enharmonic}`);
+                console.log(`[DEBUG E/B] Current game mode: ${gameMode}`);
+                console.log(`[DEBUG E/B] Current item type: ${currentItem ? currentItem.type : 'none'}`);
+                if (currentItem && currentItem.type === 'chord') {
+                    console.log(`[DEBUG E/B] Expected chord: ${currentItem.value.root} ${currentItem.value.quality}`);
+                }
+            }
+            
             if (note) {
                 // Process the note input - handle the same way as keyboard input
                 const noteName = note.charAt(0); // Get base note (C, D, E, etc.)
@@ -2354,6 +2364,16 @@ function initMobilePianoKeyboard() {
             // Get the note from data attribute
             const note = this.getAttribute('data-note');
             const enharmonic = this.getAttribute('data-enharmonic');
+            
+            // Special debug for E and B keys
+            if (note && (note.startsWith('E') || note.startsWith('B'))) {
+                console.log(`[DEBUG E/B] Clicked ${note} key with enharmonic: ${enharmonic}`);
+                console.log(`[DEBUG E/B] Current game mode: ${gameMode}`);
+                console.log(`[DEBUG E/B] Current item type: ${currentItem ? currentItem.type : 'none'}`);
+                if (currentItem && currentItem.type === 'chord') {
+                    console.log(`[DEBUG E/B] Expected chord: ${currentItem.value.root} ${currentItem.value.quality}`);
+                }
+            }
             
             if (note) {
                 const noteName = note.charAt(0); // Get base note (C, D, E, etc.)
@@ -2592,6 +2612,13 @@ function checkChordAnswer(rootNote, isMinor, fullNote = null, enharmonic = null)
         const inputWithoutOctave = fullNote.replace(/\d+$/, '');
         const enharmonicWithoutOctave = enharmonic ? enharmonic.replace(/\d+$/, '') : '';
         
+        // Add extra logging to debug E and B keys specifically
+        if (inputWithoutOctave === 'E4' || inputWithoutOctave === 'B4') {
+            console.log(`Processing E or B key input: ${inputWithoutOctave}`);
+            console.log(`Expected root: ${expectedRoot}, letter: ${expectedRootLetter}`);
+            console.log(`Input first char: ${inputWithoutOctave.charAt(0).toLowerCase()}`);
+        }
+        
         // Direct match checks (case insensitive for root letter)
         const rootMatches = 
             // Direct match
@@ -2603,9 +2630,8 @@ function checkChordAnswer(rootNote, isMinor, fullNote = null, enharmonic = null)
             (reverseEnharmonicMap[inputWithoutOctave] === expectedRoot) ||
             (enharmonicWithoutOctave && enharmonicMap[enharmonicWithoutOctave] === expectedRoot) ||
             (enharmonicWithoutOctave && reverseEnharmonicMap[enharmonicWithoutOctave] === expectedRoot) ||
-            // Match just the root letter (for cases where the user is only required to identify the root)
-            (inputWithoutOctave.charAt(0).toLowerCase() === expectedRoot.charAt(0).toLowerCase() && 
-             (requiresAccidental === hasAccidental || !requiresAccidental));
+            // Match just the root letter - this is the key fix for E and B keys
+            (inputWithoutOctave.charAt(0).toLowerCase() === expectedRootLetter);
         
         console.log(`Root matches: ${rootMatches}`);
         
