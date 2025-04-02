@@ -1151,23 +1151,37 @@ footer {
     width: 100%;
     max-width: 200px;
     margin: 5px auto 0;
-    padding: 8px; /* Reduced padding */
-    background-color: rgba(0, 15, 0, 0.8);
-    border: 1px solid rgba(0, 255, 0, 0.5);
-    border-radius: 5px;
-    color: rgba(0, 255, 0, 0.8);
+    padding: 12px; /* Increased padding for easier touch */
+    background-color: rgba(0, 35, 0, 0.8); /* Darker background for contrast */
+    border: 2px solid rgba(0, 255, 0, 0.6); /* Thicker, more visible border */
+    border-radius: 8px; /* Larger border radius */
+    color: #0f0; /* Brighter text color */
     font-weight: bold;
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 1px;
-    font-size: 0.9em;
+    font-size: 1.1em; /* Larger font size */
     cursor: pointer;
     transition: all 0.2s;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); /* Add glow */
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.7); /* Add text glow */
+}
+
+/* Pulse animation for minor chord button */
+@keyframes pulse-glow {
+    0% { box-shadow: 0 0 5px rgba(0, 255, 0, 0.3); }
+    50% { box-shadow: 0 0 15px rgba(0, 255, 0, 0.8); }
+    100% { box-shadow: 0 0 5px rgba(0, 255, 0, 0.3); }
+}
+
+.pulse-animation {
+    animation: pulse-glow 1.5s infinite;
 }
 
 .chord-quality-btn.active {
-    background-color: rgba(0, 255, 0, 0.3);
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    background-color: rgba(0, 255, 0, 0.4);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.7);
+    transform: scale(0.98);
 }
 
 /* Only show the keyboard on mobile devices in landscape mode */
