@@ -963,3 +963,134 @@ footer {
 .middle-c-indicator {
     display: none !important; /* Hide this completely */
 }
+
+/* Mobile Piano Keyboard Styles */
+#mobile-keyboard-container {
+    display: none; /* Hidden by default */
+    width: 100%;
+    margin: 10px auto;
+    max-width: 500px;
+    height: 120px;
+    position: relative;
+    overflow: hidden;
+}
+
+.mobile-keyboard {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.piano-key {
+    height: 100%;
+    border: 1px solid rgba(0, 255, 0, 0.5);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 5px;
+    box-sizing: border-box;
+    color: rgba(0, 255, 0, 0.8);
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+    cursor: pointer;
+    transition: all 0.1s;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.white-key {
+    background-color: rgba(0, 30, 0, 0.5);
+    flex: 1;
+    position: relative;
+    z-index: 1;
+    border-radius: 0 0 4px 4px;
+}
+
+.black-key {
+    background-color: rgba(0, 15, 0, 0.8);
+    width: 10%;
+    position: absolute;
+    height: 65%;
+    z-index: 2;
+    border-radius: 0 0 3px 3px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    color: rgba(0, 255, 0, 1);
+}
+
+/* Position black keys */
+.black-key[data-note="C#4"] {
+    left: calc(1/16 * 100% + 1.5%);
+}
+
+.black-key[data-note="D#4"] {
+    left: calc(3/16 * 100% + 1.5%);
+}
+
+.black-key[data-note="F#4"] {
+    left: calc(7/16 * 100% + 1.5%);
+}
+
+.black-key[data-note="G#4"] {
+    left: calc(9/16 * 100% + 1.5%);
+}
+
+.black-key[data-note="A#4"] {
+    left: calc(11/16 * 100% + 1.5%);
+}
+
+/* Piano key active state */
+.piano-key.active {
+    background-color: rgba(0, 255, 0, 0.3);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+/* Minor chord button styling for mobile keyboard */
+.chord-quality-btn {
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    margin: 10px auto 0;
+    padding: 10px;
+    background-color: rgba(0, 15, 0, 0.8);
+    border: 1px solid rgba(0, 255, 0, 0.5);
+    border-radius: 5px;
+    color: rgba(0, 255, 0, 0.8);
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.chord-quality-btn.active {
+    background-color: rgba(0, 255, 0, 0.3);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+/* Only show the keyboard on mobile devices in landscape mode */
+@media (max-width: 812px) and (orientation: landscape) {
+    #mobile-keyboard-container {
+        display: block;
+    }
+    
+    /* Adjust game container spacing to accommodate the keyboard */
+    #game-container {
+        padding-bottom: 130px;
+    }
+    
+    /* Make instruction text smaller to save space */
+    .instructions {
+        font-size: 0.8em;
+        max-height: 100px;
+        overflow-y: auto;
+    }
+    
+    /* Reduce the size of the staff to make room for keyboard */
+    #staff-area {
+        margin-bottom: 10px;
+    }
+}

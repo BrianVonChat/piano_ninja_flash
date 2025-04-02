@@ -412,6 +412,14 @@ function startGame() {
         }, 150); // Slightly longer delay after start
     }
     // --- End Scroll Adjustment ---
+    
+    // Ensure the mobile keyboard is usable
+    const mobileKeyboard = document.getElementById('mobile-keyboard-container');
+    if (mobileKeyboard) {
+        if (window.matchMedia("(max-width: 812px) and (orientation: landscape)").matches) {
+            mobileKeyboard.style.display = 'block';
+        }
+    }
 }
 
 // --- Timer Functions --- 
@@ -1118,81 +1126,27 @@ function showPointsEarned(points, x, y) {
 function handleKeyPress(event) {
     if (!gameActive || gamePaused) return;
 
-    const pressedKey = event.key.toLowerCase();
-    const isShift = event.shiftKey;
-    // const isAlt = event.altKey; // No longer needed
-
-    console.log(`Key pressed: ${pressedKey}, Shift: ${isShift}, Game mode: ${gameMode}, Type: ${currentItem ? currentItem.type : 'none'}`);
-
-    // Only process note/chord input here (a-g)
-    if (!(pressedKey >= 'a' && pressedKey <= 'g')) {
-        if (currentItem && currentItem.type === 'interval') {
-           // Interval logic handled elsewhere
-        } else {
-            console.log("Ignoring non-note key.");
-        }
-            return;
-        }
-
-    // Exit if not note or chord mode
-    if (!currentItem || (currentItem.type !== 'note' && currentItem.type !== 'chord')) {
-        console.log("Ignoring note input outside note/chord mode.");
+    const key = event.key;
+    
+    // Handle ESC key for pause functionality
+    if (key === 'Escape') {
+        togglePause();
         return;
     }
-
-    // --- Determine Expected Note/Chord Root --- 
-    let expectedValueString = "";
-    let expectedNoteLetter = "";
-    let requiresAccidental = false;
-    // let expectedIsMinor = false; // No longer needed
-
-    if (currentItem.type === 'note') {
-        expectedValueString = currentItem.value;
-    } else if (currentItem.type === 'chord') {
-        expectedValueString = currentItem.value.root;
-        // expectedIsMinor = currentItem.value.quality === 'minor'; // Don't need quality anymore
-        } else {
-        console.error("Invalid current item type."); return;
-    }
-
-    if (!expectedValueString) {
-         console.error("Expected value string is empty."); return;
-    }
     
-    expectedNoteLetter = expectedValueString.charAt(0).toLowerCase();
-    // Treat flats and sharps the same regarding accidental requirement
-    requiresAccidental = expectedValueString.includes('#') || expectedValueString.includes('b'); 
-
-    console.log(`Expected Root: ${expectedValueString}, Letter: ${expectedNoteLetter}, Accidental?: ${requiresAccidental}`);
-
-    // --- Validate User Input (Root Note Only) --- 
-    let letterMatch = (pressedKey === expectedNoteLetter);
-    // Shift key must be pressed IFF an accidental is required
-    let accidentalMatch = (isShift === requiresAccidental); 
-    // let qualityMatch = (isAlt === expectedIsMinor); // No longer check quality
-
-    // Check if the root note input is correct (letter + accidental handling)
-    const userInputCorrect = letterMatch && accidentalMatch;
-
-    // --- Provide Specific Feedback for Mismatches --- 
-    if (!userInputCorrect && letterMatch) { // Letter was right, check accidental modifier
-        if (!accidentalMatch) {
-            // Accidental mismatch (Shift key usage wrong)
-            incorrectAnswer(`Incorrect. Use Shift key ${requiresAccidental ? 'for' : 'without'} accidental on root '${expectedValueString}'.`);
-            return;
+    // Only process if we're in a relevant game mode
+    if (gameMode === 'notes' || gameMode === 'chords') {
+        // Check for note input (A-G)
+        if (/^[a-gA-G]$/.test(key)) {
+            const hasAccidental = event.shiftKey || event.altKey;
+            handleNoteInput(key, hasAccidental);
         }
-        // No other modifier checks needed
-    }
-    
-    // --- Process Result --- 
-    if (userInputCorrect) {
-         console.log("User input judged as CORRECT (root note).");
-         correctAnswer(event); // Correct root identified
-    } else {
-         console.log("User input judged as INCORRECT (root note).");
-         // Generic incorrect message if a specific one wasn't shown above
-         const expectedDisplay = `${expectedValueString}`; // Just show the root note
-         incorrectAnswer(`Incorrect. Expected root '${expectedDisplay}'.`);
+        // Special case for minor chord input
+        else if (gameMode === 'chords' && key.toLowerCase() === 'm') {
+            if (lastInput && /^[A-G]$/.test(lastInput.toUpperCase())) {
+                checkChordAnswer(lastInput, true); // true means minor
+            }
+        }
     }
 }
 
@@ -1299,12 +1253,27 @@ function setGameMode(mode) {
         resetIntervalButtonSelections(); 
         // Apply compact styles for interval mode
         staffArea.style.minHeight = '120px'; 
-        staffArea.style.padding = '10px 15px 20px 15px'; 
+        staffArea.style.padding = '10px 15px 20px 15px';
+        
+        // Hide minor chord button in intervals mode
+        document.getElementById('minor-chord-btn').style.display = 'none';
+    } else if (mode === 'chords') {
+        // Hide interval buttons in chords mode
+        intervalButtons.style.display = 'none';
+        // Apply default/larger styles for chords mode
+        staffArea.style.minHeight = '180px';
+        staffArea.style.padding = '10px 15px 60px 15px';
+        
+        // Show minor chord button only in chords mode
+        document.getElementById('minor-chord-btn').style.display = 'block';
     } else {
-        // Apply default/larger styles for notes/chords mode
+        // Apply default/larger styles for notes mode
         intervalButtons.style.display = 'none'; // Hide interval buttons
         staffArea.style.minHeight = '180px'; // Restore larger height
         staffArea.style.padding = '10px 15px 60px 15px'; // Restore larger padding
+        
+        // Hide minor chord button in notes mode
+        document.getElementById('minor-chord-btn').style.display = 'none';
     }
     // --- End Dynamic Adjustment ---
     
@@ -2076,3 +2045,241 @@ function handleOrientationChange() {
 window.addEventListener('load', handleOrientationChange);
 window.addEventListener('resize', handleOrientationChange);
 window.addEventListener('orientationchange', handleOrientationChange);
+
+// --- Mobile Piano Keyboard Functionality ---
+function initMobilePianoKeyboard() {
+    const pianoKeys = document.querySelectorAll('.piano-key');
+    
+    // Handle touch events for mobile piano keys
+    pianoKeys.forEach(key => {
+        // Add touch start event
+        key.addEventListener('touchstart', function(e) {
+            e.preventDefault(); // Prevent default touch behavior
+            
+            // Add visual feedback
+            this.classList.add('active');
+            
+            // Get the note from data attribute
+            const note = this.getAttribute('data-note');
+            if (note) {
+                // Process the note input - handle the same way as keyboard input
+                const noteName = note.charAt(0); // Get base note (C, D, E, etc.)
+                const hasAccidental = note.includes('#');
+                
+                // Simulate keyboard input using the same logic
+                handleNoteInput(noteName, hasAccidental);
+            }
+        });
+        
+        // Add touch end event to remove active state
+        key.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            this.classList.remove('active');
+        });
+        
+        // Also handle mouse events for testing on desktop
+        key.addEventListener('mousedown', function(e) {
+            // Add visual feedback
+            this.classList.add('active');
+            
+            // Get the note from data attribute
+            const note = this.getAttribute('data-note');
+            if (note) {
+                const noteName = note.charAt(0); // Get base note (C, D, E, etc.)
+                const hasAccidental = note.includes('#');
+                
+                // Simulate keyboard input
+                handleNoteInput(noteName, hasAccidental);
+            }
+        });
+        
+        key.addEventListener('mouseup', function(e) {
+            this.classList.remove('active');
+        });
+        
+        // Handle mouse leave to prevent stuck keys
+        key.addEventListener('mouseleave', function(e) {
+            this.classList.remove('active');
+        });
+    });
+    
+    // Add event listener for the minor chord button
+    const minorChordBtn = document.getElementById('minor-chord-btn');
+    if (minorChordBtn) {
+        // Add touch event for minor chord button
+        minorChordBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            this.classList.add('active');
+            
+            // Only process if we have a last input and we're in chords mode
+            if (lastInput && gameMode === 'chords') {
+                checkChordAnswer(lastInput, true); // true means minor chord
+            }
+        });
+        
+        minorChordBtn.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            this.classList.remove('active');
+        });
+        
+        // Also handle mouse events for testing
+        minorChordBtn.addEventListener('mousedown', function(e) {
+            this.classList.add('active');
+            
+            // Only process if we have a last input and we're in chords mode
+            if (lastInput && gameMode === 'chords') {
+                checkChordAnswer(lastInput, true); // true means minor chord
+            }
+        });
+        
+        minorChordBtn.addEventListener('mouseup', function(e) {
+            this.classList.remove('active');
+        });
+        
+        minorChordBtn.addEventListener('mouseleave', function(e) {
+            this.classList.remove('active');
+        });
+    }
+}
+
+// Extract the note input logic to a separate function for reuse
+function handleNoteInput(noteName, hasAccidental) {
+    if (!gameActive || gamePaused) return;
+    
+    // Only process in notes mode or chords mode
+    if (gameMode === 'notes' || gameMode === 'chords') {
+        // Convert to uppercase for consistency
+        noteName = noteName.toUpperCase();
+        
+        // Check if this is a valid note input (A through G)
+        if (/^[A-G]$/.test(noteName)) {
+            if (gameMode === 'notes') {
+                // For notes mode, check if the input matches the current note
+                checkNoteAnswer(noteName, hasAccidental);
+            } else if (gameMode === 'chords') {
+                // For chords mode, check if the input matches the chord root
+                checkChordAnswer(noteName, false); // false means not minor
+            }
+        }
+    }
+}
+
+// Refactor the keyboard event handler to use the common handleNoteInput function
+function handleKeyboardInput(event) {
+    if (!gameActive || gamePaused) return;
+    
+    const key = event.key;
+    
+    // Handle ESC key for pause functionality
+    if (key === 'Escape') {
+        togglePause();
+        return;
+    }
+    
+    // Only process if we're in a relevant game mode
+    if (gameMode === 'notes' || gameMode === 'chords') {
+        // Check for note input (A-G)
+        if (/^[a-gA-G]$/.test(key)) {
+            const hasAccidental = event.shiftKey || event.altKey;
+            handleNoteInput(key, hasAccidental);
+        }
+        // Special case for minor chord input
+        else if (gameMode === 'chords' && key.toLowerCase() === 'm') {
+            if (lastInput && /^[A-G]$/.test(lastInput.toUpperCase())) {
+                checkChordAnswer(lastInput, true); // true means minor
+            }
+        }
+    }
+}
+
+// Initialize the mobile keyboard when the page loads
+window.addEventListener('DOMContentLoaded', function() {
+    // Initialize existing functionality
+    
+    // Initialize the mobile piano keyboard
+    initMobilePianoKeyboard();
+});
+
+// Handle keyboard input for notes and chords
+function checkNoteAnswer(noteName, hasAccidental) {
+    if (!currentItem || currentItem.type !== 'note') return;
+
+    // Store the last input for potential chord quality input
+    lastInput = noteName;
+    
+    // Get expected note information
+    const expectedValueString = currentItem.value;
+    const expectedNoteLetter = expectedValueString.charAt(0).toLowerCase();
+    const requiresAccidental = expectedValueString.includes('#') || expectedValueString.includes('b');
+    
+    // Normalize the user input
+    noteName = noteName.toLowerCase();
+    
+    // Compare the input with expected value
+    const letterMatch = (noteName === expectedNoteLetter);
+    const accidentalMatch = (hasAccidental === requiresAccidental);
+    const userInputCorrect = letterMatch && accidentalMatch;
+    
+    // Provide feedback based on the result
+    if (userInputCorrect) {
+        correctAnswer({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
+    } else if (letterMatch) {
+        // Letter was right, but accidental was wrong
+        incorrectAnswer(`Incorrect. Use ${requiresAccidental ? 'accidental' : 'natural'} on note '${expectedValueString}'.`);
+    } else {
+        // Letter was wrong
+        incorrectAnswer(`Incorrect. Expected note '${expectedValueString}'.`);
+    }
+}
+
+// Handle chord answers
+function checkChordAnswer(rootNote, isMinor) {
+    if (!currentItem || currentItem.type !== 'chord') return;
+    
+    // Store the last input for potential chord quality input
+    lastInput = rootNote;
+    
+    // Get expected chord information
+    const expectedRoot = currentItem.value.root;
+    const expectedIsMinor = currentItem.value.quality === 'minor';
+    const expectedRootLetter = expectedRoot.charAt(0).toLowerCase();
+    const requiresAccidental = expectedRoot.includes('#') || expectedRoot.includes('b');
+    
+    // Normalize the user input
+    rootNote = rootNote.toLowerCase();
+    
+    // If we're just checking the root (not the minor/major quality yet)
+    if (!isMinor && !expectedIsMinor) {
+        // Compare the input with expected root
+        const letterMatch = (rootNote === expectedRootLetter);
+        const accidentalMatch = (requiresAccidental === false); // No accidentals needed
+        
+        if (letterMatch && accidentalMatch) {
+            // For major chords, we're done (correct answer)
+            correctAnswer({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
+        } else {
+            incorrectAnswer(`Incorrect. Expected root note '${expectedRoot}'.`);
+        }
+    }
+    // If we're checking the minor quality
+    else if (isMinor && expectedIsMinor) {
+        // Compare the input with expected root
+        const letterMatch = (rootNote === expectedRootLetter);
+        const accidentalMatch = (requiresAccidental === false); // No accidentals needed
+        
+        if (letterMatch && accidentalMatch) {
+            // For minor chords with correct root, we're done (correct answer)
+            correctAnswer({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
+        } else {
+            incorrectAnswer(`Incorrect. Expected minor chord with root '${expectedRoot}'.`);
+        }
+    }
+    // Mismatched quality
+    else {
+        const expectedQuality = expectedIsMinor ? 'minor' : 'major';
+        incorrectAnswer(`Incorrect. Expected ${expectedQuality} chord with root '${expectedRoot}'.`);
+    }
+}
+
+// Variable to store the last note input (used for chord quality input)
+let lastInput = null;
