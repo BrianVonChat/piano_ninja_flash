@@ -1075,10 +1075,10 @@ function nextItem() {
         };
         
         expectedRootKey = randomChord.root.charAt(0).toLowerCase();
-        isMinorChord = randomChord.quality === 'minor';
+        isMinorChord = randomChord.quality === 'minor'; // Keep this for reference but we don't use it anymore
 
         console.log(`Next: Chord ${randomChord.root} ${randomChord.quality} on ${chordPlacement}, ` +
-                  `Expect: ${expectedRootKey}${isMinorChord ? ' then m' : ''}`);
+                  `Expect root note: ${expectedRootKey}`); // Updated to only show root note
     }
 
      // Render the generated abc notation to the staff
@@ -1272,12 +1272,8 @@ function handleKeyPress(event) {
             const hasAccidental = event.shiftKey || event.altKey;
             handleNoteInput(key, hasAccidental);
         }
-        // Special case for minor chord input
-        else if (gameMode === 'chords' && key.toLowerCase() === 'm') {
-            if (lastInput && /^[A-G]$/.test(lastInput.toUpperCase())) {
-                checkChordAnswer(lastInput, true); // true means minor
-            }
-        }
+        // REMOVED: Special case for minor chord input - no longer needed
+        // Since we only need root note identification, we don't need m key handling
     }
 }
 
@@ -1424,22 +1420,18 @@ function setGameMode(mode) {
         staffArea.style.minHeight = '180px';
         staffArea.style.padding = '10px 15px 60px 15px';
         
-        // Show minor chord button only in chords mode
+        // Hide minor chord button since we don't need it anymore
         const minorChordBtn = document.getElementById('minor-chord-btn');
         if (minorChordBtn) {
-            minorChordBtn.style.display = 'block';
-            // Make minor button more prominent with animated pulse
-            minorChordBtn.classList.add('pulse-animation');
-            
-            // Enhanced visibility with bold text
-            minorChordBtn.innerHTML = '<span style="font-weight: bold; font-size: 1.2em;">MINOR</span>';
-            
-            // Ensure mobile keyboard is visible in chord mode on mobile
-            if (window.matchMedia("(max-width: 812px) and (orientation: landscape)").matches) {
-                const mobileKeyboard = document.getElementById('mobile-keyboard-container');
-                if (mobileKeyboard) {
-                    mobileKeyboard.style.display = 'block';
-                }
+            minorChordBtn.style.display = 'none'; // Hide the button completely
+            minorChordBtn.classList.remove('pulse-animation');
+        }
+        
+        // Ensure mobile keyboard is visible in chord mode on mobile
+        if (window.matchMedia("(max-width: 812px) and (orientation: landscape)").matches) {
+            const mobileKeyboard = document.getElementById('mobile-keyboard-container');
+            if (mobileKeyboard) {
+                mobileKeyboard.style.display = 'block';
             }
         }
     } else {
@@ -2400,41 +2392,14 @@ function initMobilePianoKeyboard() {
     // Add event listener for the minor chord button
     const minorChordBtn = document.getElementById('minor-chord-btn');
     if (minorChordBtn) {
-        // Add touch event for minor chord button
-        minorChordBtn.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            this.classList.add('active');
-            
-            // Only process if we have a last input and we're in chords mode
-            if (lastInput && gameMode === 'chords') {
-                console.log(`Minor button pressed for last input: ${lastInput}`);
-                checkChordAnswer(lastInput, true); // true means minor chord
-            }
-        });
+        // Remove all event listeners by cloning and replacing the element
+        const newMinorChordBtn = minorChordBtn.cloneNode(true);
+        if (minorChordBtn.parentNode) {
+            minorChordBtn.parentNode.replaceChild(newMinorChordBtn, minorChordBtn);
+        }
         
-        minorChordBtn.addEventListener('touchend', function(e) {
-            e.preventDefault();
-            this.classList.remove('active');
-        });
-        
-        // Also handle mouse events for testing
-        minorChordBtn.addEventListener('mousedown', function(e) {
-            this.classList.add('active');
-            
-            // Only process if we have a last input and we're in chords mode
-            if (lastInput && gameMode === 'chords') {
-                console.log(`Minor button clicked for last input: ${lastInput}`);
-                checkChordAnswer(lastInput, true); // true means minor chord
-            }
-        });
-        
-        minorChordBtn.addEventListener('mouseup', function(e) {
-            this.classList.remove('active');
-        });
-        
-        minorChordBtn.addEventListener('mouseleave', function(e) {
-            this.classList.remove('active');
-        });
+        // The minor chord button is now hidden and non-functional
+        // We've removed all its event listeners since we no longer need to identify minor chords
     }
 }
 
@@ -2585,26 +2550,20 @@ function checkNoteAnswer(noteName, hasAccidental, fullNote = null, enharmonic = 
 function checkChordAnswer(rootNote, isMinor, fullNote = null, enharmonic = null) {
     if (!currentItem || currentItem.type !== 'chord') return;
     
-    // Store the last input for potential chord quality input
+    // Store the last input for potential chord quality input (keeping for compatibility)
     lastInput = rootNote;
     
     // Get expected chord information
     const expectedRoot = currentItem.value.root;
-    const expectedIsMinor = currentItem.value.quality === 'minor';
     const expectedRootLetter = expectedRoot.charAt(0).toLowerCase();
     const requiresAccidental = expectedRoot.includes('#') || expectedRoot.includes('b');
     
     // Normalize the user input
     rootNote = rootNote.toLowerCase();
     
-    // Simplified hasAccidental check for mobile and keyboard input
-    const hasAccidental = fullNote ? 
-                          fullNote.includes('#') || fullNote.includes('b') : 
-                          false;
-    
     // Log for debugging
     console.log(`Checking chord root: ${rootNote}/${fullNote} against expected: ${expectedRoot}`);
-    console.log(`Is minor chord: ${expectedIsMinor}, User indicated minor: ${isMinor}`);
+    console.log(`Expected root letter: ${expectedRootLetter}`);
     
     // Special handling for mobile keyboard with full note info
     if (fullNote) {
@@ -2630,31 +2589,20 @@ function checkChordAnswer(rootNote, isMinor, fullNote = null, enharmonic = null)
             (reverseEnharmonicMap[inputWithoutOctave] === expectedRoot) ||
             (enharmonicWithoutOctave && enharmonicMap[enharmonicWithoutOctave] === expectedRoot) ||
             (enharmonicWithoutOctave && reverseEnharmonicMap[enharmonicWithoutOctave] === expectedRoot) ||
-            // Match just the root letter - this is the key fix for E and B keys
+            // Match just the root letter (for cases where the user is only required to identify the root)
             (inputWithoutOctave.charAt(0).toLowerCase() === expectedRootLetter);
         
         console.log(`Root matches: ${rootMatches}`);
         
-        // If just checking the root (not the minor/major quality)
+        // SIMPLIFIED: Only check if the root letter matches, ignore minor/major
         if (rootMatches) {
-            if (!expectedIsMinor && !isMinor) {
-                // Major chord - correct
-                correctAnswer({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
-                return;
-            } else if (expectedIsMinor && isMinor) {
-                // Minor chord with minor button pressed - correct
-                correctAnswer({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
-                return;
-            } else if (expectedIsMinor && !isMinor) {
-                // Minor chord needs the 'm' key press
-                feedbackArea.textContent = "Press 'm' key or 'minor' button for minor chord";
-                feedbackArea.className = 'intermediate';
-                return;
-            } else {
-                // They pressed 'm' but it's a major chord
-                incorrectAnswer(`Incorrect. ${expectedRoot} is a major chord.`);
-                return;
-            }
+            // Root note is correct - show correct answer (disregard minor/major)
+            correctAnswer({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
+            return;
+        } else {
+            // Root note is wrong - show incorrect answer
+            incorrectAnswer(`Incorrect. Expected root note '${expectedRoot}'.`);
+            return;
         }
     }
     
@@ -2676,27 +2624,12 @@ function checkChordAnswer(rootNote, isMinor, fullNote = null, enharmonic = null)
     // Compare the input letter with expected root letter
     const letterMatch = (rootNote === expectedRootLetter);
     
-    // If the root letter matches and we're not checking minor quality
-    if (letterMatch && !isMinor && !expectedIsMinor) {
-        // For major chords with matching root letter, we're correct
+    // SIMPLIFIED: Only check if the root letter matches, ignore minor/major
+    if (letterMatch) {
+        // If the root letter matches, we're correct
         correctAnswer({ clientX: centerX, clientY: centerY });
-    } 
-    // If the root letter matches, and both are minor
-    else if (letterMatch && isMinor && expectedIsMinor) {
-        // For minor chords with matching root letter, we're correct
-        correctAnswer({ clientX: centerX, clientY: centerY });
-    }
-    // If letter matches but we need to press minor
-    else if (letterMatch && !isMinor && expectedIsMinor) {
-        feedbackArea.textContent = `Press 'm' key or 'minor' button for minor chord`;
-        feedbackArea.className = 'intermediate';
-    }
-    // If letter matches but it's major and they pressed minor
-    else if (letterMatch && isMinor && !expectedIsMinor) {
-        incorrectAnswer(`Incorrect. ${expectedRoot} is a major chord.`);
-    }
-    // If letter doesn't match at all
-    else {
+    } else {
+        // If letter doesn't match
         incorrectAnswer(`Incorrect. Expected root note '${expectedRoot}'.`);
     }
 }
