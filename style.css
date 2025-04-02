@@ -1301,13 +1301,51 @@ footer {
     100% { transform: rotate(0deg); }
 }
 
+/* Only show portrait message when game is active and device is in portrait */
 body.portrait-mode .portrait-message {
     display: flex;
 }
 
+/* Improved setup modal for portrait mode */
+@media (max-width: 812px) and (orientation: portrait) {
+    /* Make setup modal more touch-friendly in portrait */
+    .setup-modal-content {
+        width: 90%;
+        max-width: 400px;
+        padding: 20px;
+        border-radius: 10px;
+        max-height: 85vh;
+    }
+    
+    /* Increase input size for better touch input */
+    .setup-section input[type="text"] {
+        height: 50px;
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+    
+    /* Make radio buttons easier to tap */
+    .setup-section .radio-group {
+        margin-bottom: 15px;
+        padding: 8px 0;
+    }
+    
+    .setup-section .radio-group input[type="radio"] {
+        transform: scale(1.3);
+        margin-right: 10px;
+    }
+    
+    /* Make the begin button larger for touch */
+    #begin-game-btn {
+        height: 60px;
+        font-size: 1.2em;
+        margin-top: 20px;
+    }
+}
+
 /* Special settings for very small screens in portrait mode */
 @media (max-width: 450px) and (orientation: portrait) {
-    /* Hide game container in portrait mode on small screens */
+    /* Hide game container in portrait mode on small screens when game is active */
     body.portrait-mode #game-container {
         display: none !important;
     }
@@ -1315,6 +1353,11 @@ body.portrait-mode .portrait-message {
     /* Hide welcome container in portrait mode when game is active */
     body.portrait-mode.game-active .welcome-container {
         display: none !important;
+    }
+    
+    /* But always show the setup modal, even in portrait mode */
+    body.portrait-mode #setup-modal {
+        display: flex !important;
     }
 }
 
@@ -1370,5 +1413,35 @@ body.portrait-mode .portrait-message {
     .points-popup {
         font-size: 1.4em;
         padding: 8px 12px;
+    }
+}
+
+/* Setup modal improvements specifically for portrait mode */
+@media (orientation: portrait) {
+    #setup-modal {
+        align-items: center; /* Center vertically in portrait */
+        padding: 20px 10px;
+    }
+    
+    .setup-modal-content {
+        max-height: 80vh; /* Smaller max height in portrait */
+        overflow-y: auto;
+        padding: 20px;
+    }
+    
+    .setup-modal-content h2 {
+        font-size: 1.6em;
+        margin-bottom: 15px;
+    }
+    
+    /* Make radio button options more touch-friendly */
+    .setup-section .radio-group {
+        margin-bottom: 12px;
+        padding: 6px 0;
+    }
+    
+    /* Ensure full width on smaller screens */
+    #begin-game-btn {
+        width: 100%;
     }
 }

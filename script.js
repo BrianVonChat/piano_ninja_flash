@@ -337,14 +337,16 @@ function processSetupAndStartGame() {
     document.body.classList.add('game-active');
     gameContainer.classList.add('game-active');
     
+    // Check orientation after game setup is complete
+    // If we're in portrait mode on mobile, show the rotation message
+    handleOrientationChange();
+    
     // Start the actual game logic
     startGame();
 }
 
 // --- Core Game Functions ---
 function startGame() {
-    // --- REMOVED Name Prompting Logic ---
-
     // Apply mode-specific styles/layouts FIRST
     setGameMode(gameMode); // Call setGameMode with the selected mode
 
@@ -385,7 +387,6 @@ function startGame() {
     if (staffPlaceholder) staffPlaceholder.style.display = 'none';
     
     // Reset and show per-question timer elements
-    // Find the timer container
     const timerContainer = document.getElementById('timer-container');
     if(timerContainer) {
         // Make it visible
@@ -402,6 +403,10 @@ function startGame() {
             pointsIndicator.textContent = `+${maxPointsPerQuestion}`;
         }
     }
+    
+    // Check orientation again after game starts
+    // This will show the rotation message if needed
+    handleOrientationChange();
     
     // Apply proper ordering for mobile flexbox layout
     if (window.matchMedia("(max-width: 812px) and (orientation: landscape)").matches) {
@@ -633,6 +638,12 @@ function endGame(timeExpired = false) { // Accept optional parameter
     // Remove active game classes
     document.body.classList.remove('game-active');
     gameContainer.classList.remove('game-active');
+    
+    // Remove portrait mode message since the game is no longer active
+    document.body.classList.remove('portrait-mode');
+    
+    // Call orientation change handler to update display
+    handleOrientationChange();
     
     // Show welcome screen again after scorecard is closed
     playAgainBtn.addEventListener('click', function() {
@@ -2238,8 +2249,13 @@ function handleOrientationChange() {
             }
             
         } else {
-            // Portrait mode on small devices - show rotation message
-            document.body.classList.add('portrait-mode');
+            // Only show portrait mode message if game is active
+            // This way setup can be done in portrait mode
+            if (gameActive) {
+                document.body.classList.add('portrait-mode');
+            } else {
+                document.body.classList.remove('portrait-mode');
+            }
             
             // Hide keyboard in portrait
             if (mobileKeyboard) {
