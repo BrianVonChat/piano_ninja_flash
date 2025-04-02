@@ -5,59 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Music Theory Flash Cards (Staff Notation)</title>
-    <!-- Include the abcjs library from multiple CDNs with fallbacks -->
+    
+    <!-- Direct include of abcjs from CDNs -->
+    <script src="https://cdn.jsdelivr.net/npm/abcjs@6.2.2/dist/abcjs-basic-min.js"></script>
     <script>
-        // Function to load script with fallback
-        function loadScript(src, callback) {
-            const script = document.createElement('script');
-            script.src = src;
-            script.onload = callback;
-            script.onerror = function() {
-                console.error("Failed to load script:", src);
-                if (typeof callback === 'function') callback(new Error("Script load failed"));
-            };
-            document.head.appendChild(script);
-        }
-        // Check if a local file exists first, then try CDNs
-        function checkFileExists(url, onExists, onNotExists) {
-            fetch(url, { method: 'HEAD' })
-                .then(response => {
-                    if (response.ok) {
-                        onExists();
-                    } else {
-                        onNotExists();
-                    }
-                })
-                .catch(() => {
-                    onNotExists();
-                });
-        }
-        // First check for a local copy of the library
-        checkFileExists('abcjs-basic-min.js', 
-            function() {
-                // Local file exists, use it
-                loadScript("abcjs-basic-min.js", function(err) {
-                    if (err) {
-                        loadFromCDNs(); // Fall back to CDNs if local file fails
-                    }
-                });
-            },
-            loadFromCDNs // No local file, try CDNs
-        );
-        // CDN loading function
-        function loadFromCDNs() {
-            // Try to load from jsDelivr first, then unpkg as fallback
-            loadScript("https://cdn.jsdelivr.net/npm/abcjs@6.2.2/dist/abcjs-basic-min.js", function(err) {
-                if (err) {
-                    console.log("Trying fallback CDN...");
-                    loadScript("https://unpkg.com/abcjs@6.2.2/dist/abcjs-basic-min.js", function(err) {
-                        if (err) {
-                            console.error("All CDNs failed. Please check your internet connection or try again later.");
-                        }
-                    });
-                }
-            });
-        }
+        // Check if ABCJS loaded properly
+        window.addEventListener('load', function() {
+            if (typeof ABCJS === 'undefined') {
+                console.log("Primary CDN failed, trying fallback...");
+                // Load from backup CDN if primary failed
+                var fallbackScript = document.createElement('script');
+                fallbackScript.src = "https://unpkg.com/abcjs@6.2.2/dist/abcjs-basic-min.js";
+                document.head.appendChild(fallbackScript);
+            } else {
+                console.log("ABCJS library loaded successfully!");
+            }
+        });
     </script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -78,7 +41,16 @@
     </div>
 
     <div class="game-wrapper">
-    <div id="game-container">
+        <div class="welcome-container">
+            <div class="logo-container">
+                <img src="assets/PianoNinja_Logo.png" alt="Piano Ninja Logo">
+            </div>
+            
+            <button id="setup-game-btn" class="control-btn">Launch New Game</button>
+            <button id="note-guide-btn" class="control-btn">Music Note Guide</button>
+        </div>
+        
+        <div id="game-container" style="display: none;">
             <!-- Add logo inside game container at the top -->
             <div class="logo-container">
                 <img src="assets/PianoNinja_Logo.png" alt="Piano Ninja Logo">
@@ -111,10 +83,10 @@
                 </div>
             </div>
 
-        <!-- Div where abcjs will render the staff -->
-        <div id="staff-area">
-             <div id="staff-placeholder">Press Start!</div>
-        </div>
+            <!-- Div where abcjs will render the staff -->
+            <div id="staff-area">
+                <div id="staff-placeholder">Press Start!</div>
+            </div>
 
             <!-- Timer bar -->
             <div id="timer-container" style="display: none;">
@@ -132,28 +104,26 @@
                         <!-- Buttons will be generated dynamically -->
                     </div>
                 </div>
-        </div>
-
-            <div id="main-controls"> <!-- Added wrapper div -->
-                <button id="setup-game-btn" class="control-btn">Launch New Game</button> 
-                <button id="pause-button" class="control-btn" style="display: none; position: relative; top: 0;">Pause</button>
-                <button id="end-game-btn" class="control-btn" style="display: none; position: relative; top: 0;">End</button> 
-                <button id="note-guide-btn" class="control-btn">Guide</button>
             </div>
 
-        <div class="instructions">
-            <strong>How to Play:</strong>
-            <ul>
-                <li>Select a game mode: Notes, Intervals, or Chords.</li>
-                <li><strong>Notes Mode:</strong> Press the letter key matching the note name (e.g., 'C' key for C).</li>
-                <li><strong>For Sharps/Flats:</strong> Hold Shift while pressing the note key for any accidental (e.g., Shift+C for C# or Shift+D for Db).</li>
-                <li><strong>Alternative:</strong> You can also use Alt+letter for flat notes (e.g., Alt+E for Eb).</li>
-                <li><strong>Intervals Mode:</strong> Click on the correct interval name from the multiple choice options provided.</li>
-                <li><strong>Chords Mode:</strong> Press the key for the ROOT note, then press 'm' if it's a minor chord.</li>
-                <li>The grand staff shows both treble and bass clefs simultaneously.</li>
-                <li>Musical elements may appear on either clef.</li>
-            </ul>
-        </div>
+            <div id="main-controls"> <!-- Added wrapper div -->
+                <button id="pause-button" class="control-btn" style="display: none; position: relative; top: 0;">Pause</button>
+                <button id="end-game-btn" class="control-btn" style="display: none; position: relative; top: 0;">End</button> 
+            </div>
+
+            <div class="instructions">
+                <strong>How to Play:</strong>
+                <ul>
+                    <li>Select a game mode: Notes, Intervals, or Chords.</li>
+                    <li><strong>Notes Mode:</strong> Press the letter key matching the note name (e.g., 'C' key for C).</li>
+                    <li><strong>For Sharps/Flats:</strong> Hold Shift while pressing the note key for any accidental (e.g., Shift+C for C# or Shift+D for Db).</li>
+                    <li><strong>Alternative:</strong> You can also use Alt+letter for flat notes (e.g., Alt+E for Eb).</li>
+                    <li><strong>Intervals Mode:</strong> Click on the correct interval name from the multiple choice options provided.</li>
+                    <li><strong>Chords Mode:</strong> Press the key for the ROOT note, then press 'm' if it's a minor chord.</li>
+                    <li>The grand staff shows both treble and bass clefs simultaneously.</li>
+                    <li>Musical elements may appear on either clef.</li>
+                </ul>
+            </div>
         </div>
     </div>
 

@@ -188,6 +188,8 @@ const studentNameDisplay = document.getElementById('student-name');
 const endGameBtn = document.getElementById('end-game-btn');
 const scorecardOverlay = document.getElementById('scorecard-overlay');
 const playAgainBtn = document.getElementById('play-again-btn');
+const gameContainer = document.getElementById('game-container');
+const welcomeContainer = document.querySelector('.welcome-container');
 // Scorecard display elements
 const scorecardTeacher = document.getElementById('scorecard-teacher');
 const scorecardStudent = document.getElementById('scorecard-student');
@@ -264,10 +266,11 @@ function showSetupModal() {
     studentNameInput.value = "Student";
     document.getElementById('duration-practice').checked = true;
     
+    // Hide welcome screen
+    welcomeContainer.style.display = 'none';
+    
     // Hide game elements, show modal
     setupModal.style.display = 'flex';
-    setupGameBtn.style.display = 'none'; 
-    noteGuideBtn.style.display = 'none'; 
     pauseButton.style.display = 'none';
     endGameBtn.style.display = 'none';
     if (document.getElementById('timer-container')) {
@@ -276,7 +279,33 @@ function showSetupModal() {
     staffArea.innerHTML = '<div id="staff-placeholder">Setup Game</div>'; // Show placeholder
     if (staffPlaceholder) staffPlaceholder.style.display = 'block';
     feedbackArea.textContent = '\u00A0'; // Clear feedback
+    
+    // Ensure setup modal is visible and scrollable on touch devices
+    setupModal.querySelector('.setup-modal-content').scrollTop = 0;
 }
+
+// Enable scrolling in modals for touch devices (iOS fix)
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all modal content elements that need scrolling support
+    const scrollableElements = [
+        document.querySelector('.setup-modal-content'),
+        document.querySelector('.note-guide-content'),
+        document.querySelector('.scorecard-content')
+    ];
+    
+    // Enable scrolling on touch devices
+    scrollableElements.forEach(element => {
+        if (!element) return;
+        
+        // Prevent touchmove from being blocked
+        element.addEventListener('touchmove', function(e) {
+            e.stopPropagation();
+        }, { passive: true });
+        
+        // For iOS compatibility
+        element.style.webkitOverflowScrolling = 'touch';
+    });
+});
 
 function processSetupAndStartGame() {
     // Get values from modal
@@ -300,8 +329,14 @@ function processSetupAndStartGame() {
     
     // Hide modal
     setupModal.style.display = 'none';
-    noteGuideBtn.style.display = 'inline-block'; // Show guide button again
-
+    
+    // Show game container
+    gameContainer.style.display = 'block';
+    
+    // Add active game class to body and game container
+    document.body.classList.add('game-active');
+    gameContainer.classList.add('game-active');
+    
     // Start the actual game logic
     startGame();
 }
@@ -334,6 +369,10 @@ function startGame() {
     gamePaused = false;
     
     // Update button states
+    gameContainer.style.display = 'block';
+    gameContainer.classList.add('game-active');
+    document.body.classList.add('game-active');
+    
     setupGameBtn.textContent = 'Restart';
     setupGameBtn.style.display = 'inline-block';
     pauseButton.style.display = 'inline-block';
@@ -345,9 +384,22 @@ function startGame() {
     if (staffPlaceholder) staffPlaceholder.style.display = 'none';
     
     // Reset and show per-question timer elements
-    if(document.getElementById('timer-container')) {
-         document.getElementById('timer-container').style.display = 'block';
-         timerBar.style.transform = 'scaleX(1)';
+    // Find the timer container
+    const timerContainer = document.getElementById('timer-container');
+    if(timerContainer) {
+        // Make it visible
+        timerContainer.style.display = 'block';
+        
+        // Make sure the timer bar is reset to full width
+        if(timerBar) {
+            timerBar.style.transform = 'scaleX(1)';
+            timerBar.style.display = 'block';
+        }
+        
+        // Reset the points indicator
+        if(pointsIndicator) {
+            pointsIndicator.textContent = `+${maxPointsPerQuestion}`;
+        }
     }
     
     nextItem(); // Start the first question
@@ -364,23 +416,40 @@ function startGame() {
 
 // --- Timer Functions --- 
 function startElapsedTimeTimer() {
-    // Function content remains the same (updates elapsedTimeDisplay)
+    // Clear any existing timer
     if (elapsedTimeIntervalId) {
         clearInterval(elapsedTimeIntervalId);
     }
+    
+    // Force the timer display to show the initial value
+    const elapsedTimeDisplay = document.getElementById('elapsed-time');
+    if (elapsedTimeDisplay) {
+        elapsedTimeDisplay.textContent = '0:00';
+    }
+    
     function updateDisplay() {
-        if (gamePaused || !gameActive) return; // Also check gameActive
+        if (gamePaused || !gameActive) return; // Don't update if paused or game over
+        
         const now = Date.now();
         const elapsedSeconds = Math.floor((now - gameStartTime) / 1000);
         const minutes = Math.floor(elapsedSeconds / 60);
         const seconds = elapsedSeconds % 60;
-        elapsedTimeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Make sure the element exists before updating
+        const elapsedTimeDisplay = document.getElementById('elapsed-time');
+        if (elapsedTimeDisplay) {
+            elapsedTimeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
     }
+    
+    // Initial update
     updateDisplay();
+    
+    // Start the interval
     elapsedTimeIntervalId = setInterval(updateDisplay, 1000);
 }
 
-// CHANGE: stopElapsedTimeTimer stops BOTH timers
+// Stop both elapsed time and challenge timers
 function stopElapsedTimeTimer() {
     if (elapsedTimeIntervalId) {
         clearInterval(elapsedTimeIntervalId);
@@ -392,12 +461,17 @@ function stopElapsedTimeTimer() {
     }
 }
 
-// NEW: Challenge Countdown Timer
+// Challenge Countdown Timer
 function startChallengeTimer(durationInSeconds) {
     let remainingTime = durationInSeconds;
-    // We update the existing elapsedTimeDisplay for countdown
-    elapsedTimeDisplay.classList.add('challenge-timer'); // Optional: Add class for styling
-
+    
+    // Get the elapsed time display element
+    const elapsedTimeDisplay = document.getElementById('elapsed-time');
+    if (!elapsedTimeDisplay) return; // Safety check
+    
+    // Add class for potential styling
+    elapsedTimeDisplay.classList.add('challenge-timer');
+    
     function updateChallengeDisplay() {
         if (gamePaused || !gameActive) return; 
         
@@ -405,19 +479,35 @@ function startChallengeTimer(durationInSeconds) {
         
         const minutes = Math.floor(remainingTime / 60);
         const seconds = remainingTime % 60;
-        elapsedTimeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')} ⏳`; // Countdown icon
+        
+        // Make sure the element exists before updating
+        const elapsedTimeDisplay = document.getElementById('elapsed-time');
+        if (elapsedTimeDisplay) {
+            elapsedTimeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')} ⏳`; // Countdown icon
+        }
 
         if (remainingTime <= 0) {
             clearInterval(challengeTimerId);
             challengeTimerId = null;
-            elapsedTimeDisplay.textContent = "Time's Up!";
-            elapsedTimeDisplay.classList.remove('challenge-timer');
+            
+            if (elapsedTimeDisplay) {
+                elapsedTimeDisplay.textContent = "Time's Up!";
+                elapsedTimeDisplay.classList.remove('challenge-timer');
+            }
+            
             endGame(true); // Automatically end the game when time is up (pass true)
         }
     }
+    
     // Clear previous timer if any
-    if (challengeTimerId) clearInterval(challengeTimerId);
-    updateChallengeDisplay(); // Initial display
+    if (challengeTimerId) {
+        clearInterval(challengeTimerId);
+    }
+    
+    // Initial display
+    updateChallengeDisplay(); 
+    
+    // Start the interval
     challengeTimerId = setInterval(updateChallengeDisplay, 1000);
 }
 
@@ -482,6 +572,17 @@ function endGame(timeExpired = false) { // Accept optional parameter
     scorecardOverlay.style.display = 'flex';
     setupGameBtn.textContent = 'Launch New Game'; // Reset button text
     setupGameBtn.style.display = 'inline-block'; // Show setup button again
+    
+    // Remove active game classes
+    document.body.classList.remove('game-active');
+    gameContainer.classList.remove('game-active');
+    
+    // Show welcome screen again after scorecard is closed
+    playAgainBtn.addEventListener('click', function() {
+        scorecardOverlay.style.display = 'none';
+        welcomeContainer.style.display = 'flex';
+        gameContainer.style.display = 'none';
+    }, { once: true });
 }
 
 // --- Other Functions ---
@@ -495,7 +596,7 @@ function togglePause() {
     
     if (gamePaused) {
         pauseButton.style.display = 'none';
-        endGameBtn.style.display = 'none'; 
+        endGameBtn.style.display = 'none'; // Hide End Game btn while paused
         pauseOverlay.style.display = 'flex';
         // Timers pause via their internal checks
     } else { // Resuming
@@ -643,13 +744,7 @@ function renderStaff(abcString) {
             });
         });
         
-        // Add middle C indicator if needed
-        if (gameMode === 'notes' && !isVerySmallScreen()) {
-            const middleCIndicator = document.createElement('div');
-            middleCIndicator.className = 'middle-c-indicator';
-            middleCIndicator.textContent = 'Middle C';
-            staffArea.appendChild(middleCIndicator);
-        }
+        // REMOVED: The middle-c-indicator code has been removed
     } catch (error) {
         console.error("Error rendering ABC notation:", error);
         staffArea.innerHTML = '<div style="color:#0f0; text-shadow: 0 0 5px #0f0;">Error rendering staff</div>';
@@ -947,9 +1042,15 @@ function updateTimingIndicator(elapsedMsOverride = 0) {
         timerAnimationId = null;
     }
     
+    // Make sure timer container is visible
+    if (document.getElementById('timer-container')) {
+        document.getElementById('timer-container').style.display = 'block';
+    }
+    
     // Reset timer bar
     timerBar.style.transform = 'scaleX(1)';
     pointsIndicator.textContent = `+${maxPointsPerQuestion}`;
+    pointsIndicator.style.opacity = '0.7'; // Make it slightly less prominent
     
     // If game is paused, don't start a new timer
     if (gamePaused) return;
@@ -1217,23 +1318,16 @@ function setGameMode(mode) {
 // Function to toggle note guide
 function toggleNoteGuide() {
     if (noteGuideOverlay.style.display === 'flex') {
-        // Close the guide
         noteGuideOverlay.style.display = 'none';
-        // If game was active and paused by guide, resume it
-        if (gameActive && gamePaused && pauseOverlay.style.display === 'none') {
-            gamePaused = false;
-            if (currentItem) {
-                updateTimingIndicator(Date.now() - noteStartTime);
-            }
+        if (gameActive) {
+            gameContainer.style.display = 'block';
+        } else {
+            welcomeContainer.style.display = 'flex';
         }
     } else {
-        // Open the guide
         noteGuideOverlay.style.display = 'flex';
-        // If game is active, pause it
-        if (gameActive && !gamePaused) {
-            gamePaused = true;
-            // Don't show pause overlay though
-        }
+        welcomeContainer.style.display = 'none';
+        gameContainer.style.display = 'none';
     }
 }
 
@@ -1665,6 +1759,38 @@ window.addEventListener('load', function() {
     let retries = 0;
     const maxRetries = 5;
     
+    // Clean up any middle C indicators that might be present
+    document.querySelectorAll('.middle-c-indicator').forEach(indicator => {
+        indicator.style.display = 'none';
+        indicator.remove();
+    });
+    
+    // Make sure timer container is properly setup
+    const timerContainer = document.getElementById('timer-container');
+    if (timerContainer) {
+        console.log("Timer container found, setting up...");
+        // Ensure proper display and styling
+        timerContainer.style.cssText = "display: block; height: 8px; width: 100%; background-color: rgba(0, 255, 0, 0.1); position: relative; overflow: hidden;";
+        
+        // Make sure timer bar is visible
+        const timerBar = document.getElementById('timer-bar');
+        if (timerBar) {
+            timerBar.style.cssText = "height: 100%; width: 100%; background: linear-gradient(90deg, #0f0, #0ff); transform-origin: left; display: block;";
+        } else {
+            console.error("Timer bar element not found!");
+        }
+        
+        // Check points indicator
+        const pointsIndicator = document.getElementById('points-indicator');
+        if (pointsIndicator) {
+            pointsIndicator.style.cssText = "position: absolute; right: 0; top: -20px; font-size: 0.9em; color: #0f0; opacity: 0.7;";
+        } else {
+            console.error("Points indicator element not found!");
+        }
+    } else {
+        console.error("Timer container element not found!");
+    }
+    
     function checkAbcjsAndRender() {
         // Check if the abcjs library loaded correctly
         if (typeof ABCJS !== 'undefined') {
@@ -1754,16 +1880,33 @@ async function initMIDI() {
         const midiAccess = await navigator.requestMIDIAccess();
         
         // Add a MIDI connection status indicator to the game
-        const gameStats = document.querySelector('.game-stats');
-        if (gameStats) {
-            const midiStatusBox = document.createElement('div');
-            midiStatusBox.className = 'stat-box';
-            midiStatusBox.innerHTML = `
-                <div class="stat-icon">🎹</div>
-                <div class="stat-label">MIDI</div>
-                <div class="stat-value" id="midi-status">Connected</div>
-            `;
-            gameStats.appendChild(midiStatusBox);
+        // Create a separate MIDI status container instead of adding to game-stats
+        const gameContainer = document.getElementById('game-container');
+        
+        if (gameContainer) {
+            // Check if MIDI status box already exists
+            let midiStatusBox = document.getElementById('midi-status-box');
+            
+            if (!midiStatusBox) {
+                // Create a new display area for MIDI status
+                midiStatusBox = document.createElement('div');
+                midiStatusBox.id = 'midi-status-box';
+                midiStatusBox.className = 'midi-status-box';
+                midiStatusBox.innerHTML = `
+                    <div class="stat-icon">🎹</div>
+                    <div class="stat-label">MIDI</div>
+                    <div class="stat-value" id="midi-status">Connected</div>
+                `;
+                
+                // Add the MIDI status below the game stats but above the staff area
+                const staffArea = document.getElementById('staff-area');
+                if (staffArea) {
+                    gameContainer.insertBefore(midiStatusBox, staffArea);
+                } else {
+                    // Fallback - append to the end of game container
+                    gameContainer.appendChild(midiStatusBox);
+                }
+            }
         }
         
         // Log MIDI access success
@@ -1917,3 +2060,19 @@ function processMIDINote(noteWithOctave) {
         }, 200);
     }
 }
+
+// Function to handle mobile orientation changes
+function handleOrientationChange() {
+    if (window.matchMedia("(orientation: portrait)").matches && window.innerWidth < 450) {
+        // Portrait mode on small devices - show message
+        document.body.classList.add('portrait-mode');
+    } else {
+        // Landscape mode - hide message
+        document.body.classList.remove('portrait-mode');
+    }
+}
+
+// Call on page load and orientation change
+window.addEventListener('load', handleOrientationChange);
+window.addEventListener('resize', handleOrientationChange);
+window.addEventListener('orientationchange', handleOrientationChange);
