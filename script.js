@@ -1155,17 +1155,88 @@ function updateTimingIndicator(elapsedMsOverride = 0) {
 }
 // Show the points earned animation
 function showPointsEarned(points, x, y) {
+    // Create the points popup element
     const pointsPopup = document.createElement('div');
     pointsPopup.className = 'points-popup';
     pointsPopup.textContent = `+${points}`;
-    pointsPopup.style.left = `${x}px`;
-    pointsPopup.style.top = `${y}px`;
+    
+    // Get better positioning based on the staff area
+    const staffRect = staffArea.getBoundingClientRect();
+    
+    // Default to center of staff area if no specific coordinates provided
+    const centerX = staffRect.left + (staffRect.width / 2);
+    const centerY = staffRect.top + (staffRect.height / 2);
+    
+    // Use provided coordinates or default to staff center
+    pointsPopup.style.left = `${x || centerX}px`;
+    pointsPopup.style.top = `${y || centerY}px`;
+    
+    // Center the popup on the point (adjust for its width/height)
+    pointsPopup.style.transform = 'translate(-50%, -50%)';
+    
+    // Add it to the document
     document.body.appendChild(pointsPopup);
+    
+    // Create ripple effect
+    createPointsRipple(x || centerX, y || centerY);
+    
+    // Add ping animation using CSS animation
+    pointsPopup.style.animation = 'points-float 1.4s ease-out forwards, points-ping 0.3s ease-in-out 2';
+    
+    // Add an extra glow effect to draw attention
+    setTimeout(() => {
+        pointsPopup.style.boxShadow = "0 0 25px rgba(0, 255, 0, 0.8), inset 0 0 15px rgba(0, 255, 0, 0.5)";
+        pointsPopup.style.textShadow = "0 0 15px #0f0, 0 0 20px #0f0";
+    }, 100);
     
     // Remove after animation completes
     setTimeout(() => {
-        document.body.removeChild(pointsPopup);
-    }, 1200);
+        if (pointsPopup.parentNode) {
+            document.body.removeChild(pointsPopup);
+        }
+    }, 1400);
+}
+
+// Create a ripple effect around the point
+function createPointsRipple(x, y) {
+    const ripple = document.createElement('div');
+    ripple.style.position = 'fixed';
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    ripple.style.width = '10px';
+    ripple.style.height = '10px';
+    ripple.style.borderRadius = '50%';
+    ripple.style.backgroundColor = 'transparent';
+    ripple.style.border = '2px solid #0f0';
+    ripple.style.transform = 'translate(-50%, -50%)';
+    ripple.style.zIndex = '9998';
+    ripple.style.pointerEvents = 'none';
+    
+    // Add animation
+    ripple.style.animation = 'ripple 0.8s ease-out forwards';
+    
+    // Add animation keyframes dynamically if not already added
+    if (!document.getElementById('ripple-animation')) {
+        const style = document.createElement('style');
+        style.id = 'ripple-animation';
+        style.textContent = `
+            @keyframes ripple {
+                0% { width: 10px; height: 10px; opacity: 1; }
+                100% { width: 100px; height: 100px; opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Add to document
+    document.body.appendChild(ripple);
+    
+    // Remove after animation
+    setTimeout(() => {
+        if (ripple.parentNode) {
+            document.body.removeChild(ripple);
+        }
+    }, 800);
 }
 
 // handleKeyPress, correctAnswer, incorrectAnswer, showFeedback, updateScoreDisplay
@@ -1201,6 +1272,7 @@ function handleKeyPress(event) {
 
 function correctAnswer(event) {
     correctAnswers++; // Increment correct answers
+    
     // Stop the timer animation
     if (timerAnimationId) {
         cancelAnimationFrame(timerAnimationId);
@@ -1231,10 +1303,34 @@ function correctAnswer(event) {
     // Simple feedback without difficulty announcement
     showFeedback('Correct!', 'correct');
     
-    // Show points animation near the mouse position or keyboard
-    const x = event && event.clientX ? event.clientX : window.innerWidth / 2;
-    const y = event && event.clientY ? event.clientY : window.innerHeight / 2;
-    showPointsEarned(pointsEarned, x - 20, y - 30);
+    // Determine the best position for the points animation
+    let x, y;
+    
+    if (event && event.clientX && event.clientY) {
+        // If we have mouse/touch event coordinates, use them
+        x = event.clientX;
+        y = event.clientY;
+    } else if (currentItem && currentItem.type === 'note' || currentItem.type === 'chord') {
+        // For notes/chords, try to position over the rendered note
+        const staffRect = staffArea.getBoundingClientRect();
+        x = staffRect.left + (staffRect.width * 0.5); // Center horizontally
+        
+        // If we know which clef, adjust vertical position
+        if (currentItem.clef === 'treble') {
+            y = staffRect.top + (staffRect.height * 0.3); // Upper half for treble
+        } else if (currentItem.clef === 'bass') {
+            y = staffRect.top + (staffRect.height * 0.7); // Lower half for bass
+        } else {
+            y = staffRect.top + (staffRect.height * 0.5); // Center if unknown
+        }
+    } else {
+        // Default to center of viewport if all else fails
+        x = window.innerWidth / 2;
+        y = window.innerHeight / 2;
+    }
+    
+    // Show points animation
+    showPointsEarned(pointsEarned, x, y);
     
     // Move to next item after delay (slightly longer delay if difficulty changed)
     setTimeout(nextItem, difficultyChanged ? 1200 : 800);
@@ -2348,9 +2444,23 @@ function checkNoteAnswer(noteName, hasAccidental) {
     const accidentalMatch = (hasAccidental === requiresAccidental);
     const userInputCorrect = letterMatch && accidentalMatch;
     
+    // Get coordinates from the staff for the animation
+    const staffRect = staffArea.getBoundingClientRect();
+    const centerX = staffRect.left + (staffRect.width / 2);
+    let centerY;
+    
+    // Adjust Y based on clef
+    if (currentItem.clef === 'treble') {
+        centerY = staffRect.top + (staffRect.height * 0.3); 
+    } else if (currentItem.clef === 'bass') {
+        centerY = staffRect.top + (staffRect.height * 0.7);
+    } else {
+        centerY = staffRect.top + (staffRect.height / 2);
+    }
+    
     // Provide feedback based on the result
     if (userInputCorrect) {
-        correctAnswer({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
+        correctAnswer({ clientX: centerX, clientY: centerY });
     } else if (letterMatch) {
         // Letter was right, but accidental was wrong
         incorrectAnswer(`Incorrect. Use ${requiresAccidental ? 'accidental' : 'natural'} on note '${expectedValueString}'.`);
@@ -2376,6 +2486,20 @@ function checkChordAnswer(rootNote, isMinor) {
     // Normalize the user input
     rootNote = rootNote.toLowerCase();
     
+    // Get coordinates from the staff for the animation
+    const staffRect = staffArea.getBoundingClientRect();
+    const centerX = staffRect.left + (staffRect.width / 2);
+    
+    // Adjust Y based on chord placement
+    let centerY;
+    if (currentItem.placement === 'treble') {
+        centerY = staffRect.top + (staffRect.height * 0.3);
+    } else if (currentItem.placement === 'bass') {
+        centerY = staffRect.top + (staffRect.height * 0.7);
+    } else {
+        centerY = staffRect.top + (staffRect.height / 2);
+    }
+    
     // If we're just checking the root (not the minor/major quality yet)
     if (!isMinor && !expectedIsMinor) {
         // Compare the input with expected root
@@ -2384,7 +2508,7 @@ function checkChordAnswer(rootNote, isMinor) {
         
         if (letterMatch && accidentalMatch) {
             // For major chords, we're done (correct answer)
-            correctAnswer({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
+            correctAnswer({ clientX: centerX, clientY: centerY });
         } else {
             incorrectAnswer(`Incorrect. Expected root note '${expectedRoot}'.`);
         }
@@ -2397,7 +2521,7 @@ function checkChordAnswer(rootNote, isMinor) {
         
         if (letterMatch && accidentalMatch) {
             // For minor chords with correct root, we're done (correct answer)
-            correctAnswer({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
+            correctAnswer({ clientX: centerX, clientY: centerY });
         } else {
             incorrectAnswer(`Incorrect. Expected minor chord with root '${expectedRoot}'.`);
         }
