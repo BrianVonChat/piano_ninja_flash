@@ -596,6 +596,74 @@ footer {
     background-color: rgba(23, 23, 36, 0.9); /* Match game container background */
 }
 
+/* Mobile optimizations for landscape mode */
+@media (max-width: 812px) and (orientation: landscape) {
+    /* Optimize game container */
+    #game-container {
+        width: 100%;
+        max-width: 100%;
+        padding: 10px;
+        margin: 0;
+        box-sizing: border-box;
+        border-radius: 0;
+    }
+    
+    /* No need for spacing, use the full screen */
+    .game-wrapper {
+        padding: 0;
+        min-height: auto;
+    }
+    
+    /* Optimize game stats bar */
+    .game-stats {
+        margin: 0 0 5px 0;
+    }
+    
+    .stat-box {
+        padding: 5px;
+        margin: 0 2px;
+    }
+    
+    .stat-icon {
+        font-size: 1em;
+        margin-bottom: 2px;
+    }
+    
+    .stat-label {
+        font-size: 0.7em;
+        margin-bottom: 2px;
+    }
+    
+    .stat-value {
+        font-size: 1.1em;
+    }
+    
+    /* Touch-optimized feedback area */
+    #feedback-area {
+        font-size: 1em;
+        min-height: 1em;
+        height: auto;
+        margin: 5px 0;
+    }
+    
+    /* Optimized pause/end buttons for better tap targets */
+    #pause-button, #end-game-btn {
+        touch-action: manipulation;
+        -webkit-appearance: none;
+        -webkit-tap-highlight-color: transparent;
+        min-width: 70px;
+        height: 36px;
+        padding: 0 10px;
+        font-size: 0.85em;
+    }
+    
+    /* Make scrollable elements have momentum scrolling on iOS */
+    .scrollable {
+        -webkit-overflow-scrolling: touch;
+        overflow-y: auto;
+    }
+}
+
 /* Mobile responsiveness - Landscape mode */
 @media (max-width: 812px) {
     /* Make initial main buttons more prominent and touch-friendly */
@@ -968,9 +1036,9 @@ footer {
 #mobile-keyboard-container {
     display: none; /* Hidden by default */
     width: 100%;
-    margin: 10px auto;
+    margin: 5px auto;
     max-width: 500px;
-    height: 120px;
+    height: 100px; /* Reduced height for better mobile fit */
     position: relative;
     overflow: hidden;
 }
@@ -1051,8 +1119,8 @@ footer {
     display: block;
     width: 100%;
     max-width: 200px;
-    margin: 10px auto 0;
-    padding: 10px;
+    margin: 5px auto 0;
+    padding: 8px; /* Reduced padding */
     background-color: rgba(0, 15, 0, 0.8);
     border: 1px solid rgba(0, 255, 0, 0.5);
     border-radius: 5px;
@@ -1073,24 +1141,140 @@ footer {
 
 /* Only show the keyboard on mobile devices in landscape mode */
 @media (max-width: 812px) and (orientation: landscape) {
+    /* Center game container with proper spacing */
+    #game-container {
+        padding-bottom: 10px;
+        padding-top: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Optimize staff area */
+    #staff-area {
+        margin: 5px auto;
+        padding: 10px 15px 15px 15px;
+        min-height: 120px;
+    }
+    
+    /* Show mobile keyboard */
     #mobile-keyboard-container {
         display: block;
+        order: 1; /* Place right after staff */
+        margin: 0 auto 5px;
     }
     
-    /* Adjust game container spacing to accommodate the keyboard */
-    #game-container {
-        padding-bottom: 130px;
+    /* Reposition game controls below keyboard */
+    #main-controls {
+        order: 2;
+        position: relative;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 5px 0;
     }
     
-    /* Make instruction text smaller to save space */
+    /* Make buttons more touch-friendly */
+    #pause-button, #end-game-btn {
+        min-height: 40px;
+        font-size: 0.9em;
+        padding: 0 15px;
+        min-width: 80px;
+    }
+    
+    /* Make timer more compact */
+    #timer-container {
+        order: 3;
+        margin: 5px 0;
+        height: 6px;
+    }
+    
+    /* Make feedback area more compact */
+    #feedback-area {
+        order: 4;
+        min-height: 1em;
+        margin: 5px 0;
+    }
+    
+    /* Make interval buttons more compact */
+    #interval-buttons {
+        order: 5;
+        margin: 5px 0;
+    }
+    
+    /* Hide instructions when keyboard is visible to save space */
     .instructions {
-        font-size: 0.8em;
-        max-height: 100px;
-        overflow-y: auto;
+        display: none;
     }
     
-    /* Reduce the size of the staff to make room for keyboard */
-    #staff-area {
-        margin-bottom: 10px;
+    /* Ensure proper scaling of all elements */
+    .game-stats {
+        margin-bottom: 5px;
+    }
+    
+    /* Make sure the logo is as small as possible */
+    .game-active .logo-container,
+    #game-container .logo-container,
+    .game-wrapper.game-active .logo-container {
+        max-width: 60px !important;
+        margin-bottom: 2px !important;
+    }
+}
+
+/* Portrait mode message */
+.portrait-message {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.portrait-message .rotation-icon {
+    font-size: 4em;
+    margin-bottom: 20px;
+    animation: rotate 2s infinite ease-in-out;
+    color: #0f0;
+    text-shadow: 0 0 10px #0f0;
+}
+
+.portrait-message p {
+    font-size: 1.2em;
+    color: #0f0;
+    text-shadow: 0 0 5px #0f0;
+    margin-bottom: 20px;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(90deg); }
+    50% { transform: rotate(90deg); }
+    75% { transform: rotate(0deg); }
+    100% { transform: rotate(0deg); }
+}
+
+body.portrait-mode .portrait-message {
+    display: flex;
+}
+
+/* Special settings for very small screens in portrait mode */
+@media (max-width: 450px) and (orientation: portrait) {
+    /* Hide game container in portrait mode on small screens */
+    body.portrait-mode #game-container {
+        display: none !important;
+    }
+    
+    /* Hide welcome container in portrait mode when game is active */
+    body.portrait-mode.game-active .welcome-container {
+        display: none !important;
     }
 }

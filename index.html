@@ -40,6 +40,13 @@
         <div class="floating-note" style="top: 45%; left: 5%; animation-delay: 2s;">𝄞</div>
     </div>
 
+    <!-- Portrait mode rotation message -->
+    <div class="portrait-message">
+        <div class="rotation-icon">📱</div>
+        <p>Please rotate your device to landscape mode for the best experience.</p>
+        <p>The piano keyboard is only available in landscape orientation.</p>
+    </div>
+
     <div class="game-wrapper">
         <div class="welcome-container">
             <div class="logo-container">
@@ -88,29 +95,6 @@
                 <div id="staff-placeholder">Press Start!</div>
             </div>
 
-            <!-- Timer bar -->
-            <div id="timer-container" style="display: none;">
-                <div id="timer-bar"></div>
-                <div id="points-indicator">+1000</div>
-            </div>
-            
-            <!-- Moved Feedback Area Above Interval Buttons -->
-            <div id="feedback-area"> </div> 
-
-            <!-- Interval-specific buttons (only shown in intervals mode) -->
-            <div id="interval-buttons" class="button-area" style="display: none;">
-                <div id="interval-choices" class="interval-choices">
-                    <div class="interval-choice-buttons">
-                        <!-- Buttons will be generated dynamically -->
-                    </div>
-                </div>
-            </div>
-
-            <div id="main-controls"> <!-- Added wrapper div -->
-                <button id="pause-button" class="control-btn" style="display: none; position: relative; top: 0;">Pause</button>
-                <button id="end-game-btn" class="control-btn" style="display: none; position: relative; top: 0;">End</button> 
-            </div>
-
             <!-- Mobile Piano Keyboard - only visible on mobile devices in landscape mode -->
             <div id="mobile-keyboard-container" class="mobile-only">
                 <div class="mobile-keyboard">
@@ -136,6 +120,29 @@
                 <div id="minor-chord-btn" class="chord-quality-btn" style="display: none;">
                     <span>minor</span>
                 </div>
+            </div>
+
+            <!-- Timer bar -->
+            <div id="timer-container" style="display: none;">
+                <div id="timer-bar"></div>
+                <div id="points-indicator">+1000</div>
+            </div>
+            
+            <!-- Moved Feedback Area Above Interval Buttons -->
+            <div id="feedback-area"> </div> 
+
+            <!-- Interval-specific buttons (only shown in intervals mode) -->
+            <div id="interval-buttons" class="button-area" style="display: none;">
+                <div id="interval-choices" class="interval-choices">
+                    <div class="interval-choice-buttons">
+                        <!-- Buttons will be generated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="main-controls"> <!-- Added wrapper div -->
+                <button id="pause-button" class="control-btn" style="display: none; position: relative; top: 0;">Pause</button>
+                <button id="end-game-btn" class="control-btn" style="display: none; position: relative; top: 0;">End</button> 
             </div>
 
             <div class="instructions">
