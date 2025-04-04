@@ -1463,3 +1463,235 @@ body.portrait-mode .portrait-message {
         width: 100%;
     }
 }
+
+/* Welcome Popup Modal Styling */
+.welcome-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    animation: fade-in 0.5s ease-out;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.welcome-popup-content {
+    background-color: rgba(23, 23, 36, 0.95);
+    padding: 35px;
+    border-radius: 12px;
+    border: 2px solid #0f0;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.4), inset 0 0 15px rgba(0, 255, 0, 0.2);
+    text-align: center;
+    max-width: 450px;
+    width: 90%;
+    animation: popup-scale 0.4s ease-out;
+}
+
+@keyframes popup-scale {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.welcome-logo-container {
+    max-width: 280px;
+    margin: 0 auto 25px;
+}
+
+.welcome-logo-container img {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 10px rgba(0, 255, 0, 0.7));
+}
+
+.welcome-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.welcome-btn {
+    font-family: 'Courier New', monospace;
+    font-size: 1.2em;
+    padding: 14px 20px;
+    border-radius: 8px;
+    background-color: rgba(0, 255, 0, 0.15);
+    color: #0f0;
+    border: 2px solid #0f0;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    text-shadow: 0 0 5px #0f0;
+}
+
+.welcome-btn:hover {
+    background-color: rgba(0, 255, 0, 0.25);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
+    transform: translateY(-2px);
+}
+
+.welcome-btn:active {
+    transform: translateY(1px);
+}
+
+/* Bottom Navigation Bar */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(14, 14, 26, 0.85);
+    padding: 8px 15px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 100;
+    border-top: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.nav-btn {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85em;
+    padding: 6px 12px;
+    background-color: rgba(0, 255, 0, 0.1);
+    color: #0f0;
+    border: 1px solid rgba(0, 255, 0, 0.4);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.nav-btn:hover {
+    background-color: rgba(0, 255, 0, 0.2);
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
+}
+
+/* About Game Overlay */
+.overlay-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    backdrop-filter: blur(5px);
+}
+
+.about-game-content {
+    background-color: rgba(23, 23, 36, 0.95);
+    padding: 30px;
+    border-radius: 10px;
+    border: 1px solid #0f0;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+    max-width: 650px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.about-game-content h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px #0f0;
+    letter-spacing: 3px;
+    text-align: center;
+}
+
+.about-content {
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.about-content p {
+    margin-bottom: 15px;
+}
+
+.about-content ul {
+    padding-left: 25px;
+    margin-bottom: 15px;
+}
+
+.about-content li {
+    margin-bottom: 8px;
+    position: relative;
+}
+
+.about-content strong {
+    color: #0f0;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+.about-game-modes, .about-scoring {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.about-game-modes h3, .about-scoring h3 {
+    color: #0f0;
+    margin-bottom: 15px;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+.mode-description {
+    margin-bottom: 15px;
+    padding-left: 10px;
+    border-left: 2px solid rgba(0, 255, 0, 0.3);
+}
+
+.mode-description h4 {
+    color: #0f0;
+    margin-bottom: 5px;
+}
+
+#close-about-btn {
+    display: block;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+/* Mobile responsiveness for welcome popup */
+@media (max-width: 450px) {
+    .welcome-popup-content {
+        padding: 25px 20px;
+    }
+    
+    .welcome-logo-container {
+        max-width: 200px;
+        margin-bottom: 20px;
+    }
+    
+    .welcome-btn {
+        font-size: 1em;
+        padding: 12px 15px;
+    }
+    
+    .bottom-nav {
+        padding: 5px 10px;
+    }
+    
+    .nav-btn {
+        font-size: 0.75em;
+        padding: 5px 8px;
+    }
+}

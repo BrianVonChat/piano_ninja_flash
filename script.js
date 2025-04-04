@@ -240,15 +240,29 @@ noteGuideBtn.addEventListener('click', toggleNoteGuide);
 closeGuideBtn.addEventListener('click', toggleNoteGuide);
 document.addEventListener('keydown', handleKeyPress);
 document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape' && gameActive) {
-        if (noteGuideOverlay.style.display === 'flex') {
+    if (event.key === 'Escape') {
+        // Close about overlay if it's open
+        const aboutOverlay = document.getElementById('about-game-overlay');
+        if (aboutOverlay && aboutOverlay.style.display === 'flex') {
+            hideAboutOverlay();
+            return;
+        }
+        
+        // Check if note guide is open and close it
+        if (noteGuideOverlay && noteGuideOverlay.style.display === 'flex') {
             toggleNoteGuide();
-        } else if (setupModal.style.display === 'flex') {
-            // Optional: Close setup modal on Escape? Or just rely on button?
-            // setupModal.style.display = 'none';
-            // setupGameBtn.style.display = 'inline-block'; 
-            // noteGuideBtn.style.display = 'inline-block';
-        } else {
+            return;
+        }
+        
+        // Check if welcome popup is open and close it
+        const welcomePopup = document.getElementById('welcome-popup');
+        if (!gameActive && welcomePopup && welcomePopup.style.display === 'flex') {
+            hideWelcomePopup();
+            return;
+        }
+        
+        // Otherwise toggle game pause if active
+        if (gameActive) {
             togglePause();
         }
     }
@@ -334,6 +348,9 @@ function processSetupAndStartGame() {
     // Hide modal
     setupModal.style.display = 'none';
     
+    // Ensure welcome popup is hidden
+    hideWelcomePopup();
+    
     // Show game container
     gameContainer.style.display = 'flex'; // Changed to flex for better layout
     
@@ -344,6 +361,12 @@ function processSetupAndStartGame() {
     // Check orientation after game setup is complete
     // If we're in portrait mode on mobile, show the rotation message
     handleOrientationChange();
+    
+    // Ensure bottom navigation is visible
+    const bottomNav = document.querySelector('.bottom-nav');
+    if (bottomNav) {
+        bottomNav.style.display = 'flex';
+    }
     
     // Start the actual game logic
     startGame();
@@ -652,9 +675,11 @@ function endGame(timeExpired = false) { // Accept optional parameter
     // Show welcome screen again after scorecard is closed
     playAgainBtn.addEventListener('click', function() {
         scorecardOverlay.style.display = 'none';
-        welcomeContainer.style.display = 'flex'; // Use flex for better centering of buttons
-        welcomeContainer.style.justifyContent = 'center'; // Center buttons horizontally 
-        welcomeContainer.style.alignItems = 'center'; // Center buttons vertically
+        
+        // Show welcome popup instead of welcome container
+        showWelcomePopup();
+        
+        // Hide game container
         gameContainer.style.display = 'none';
     }, { once: true });
 }
@@ -2020,6 +2045,33 @@ window.addEventListener('load', function() {
 // Initialize MIDI as soon as the page loads
 document.addEventListener('DOMContentLoaded', function() {
     initMIDI();
+    
+    // Show welcome popup on page load
+    showWelcomePopup();
+    
+    // Set up event listeners for welcome popup buttons
+    document.getElementById('popup-launch-game').addEventListener('click', function() {
+        hideWelcomePopup();
+        showSetupModal();
+    });
+    
+    document.getElementById('popup-note-guide').addEventListener('click', function() {
+        hideWelcomePopup();
+        toggleNoteGuide();
+    });
+    
+    document.getElementById('popup-about-game').addEventListener('click', function() {
+        hideWelcomePopup();
+        showAboutOverlay();
+    });
+    
+    // Set up event listeners for bottom navigation
+    document.getElementById('setup-game-btn').addEventListener('click', showSetupModal);
+    document.getElementById('note-guide-btn').addEventListener('click', toggleNoteGuide);
+    document.getElementById('about-btn').addEventListener('click', showAboutOverlay);
+    
+    // Close about overlay button
+    document.getElementById('close-about-btn').addEventListener('click', hideAboutOverlay);
 });
 
 // Function to initialize MIDI access
@@ -2689,3 +2741,49 @@ function checkChordAnswer(rootNote, isMinor, fullNote = null, enharmonic = null)
 
 // Variable to store the last note input (used for chord quality input)
 let lastInput = null;
+
+// Function to show welcome popup
+function showWelcomePopup() {
+    const welcomePopup = document.getElementById('welcome-popup');
+    if (welcomePopup) {
+        welcomePopup.style.display = 'flex';
+        
+        // Hide the welcome container when popup is shown
+        const welcomeContainer = document.querySelector('.welcome-container');
+        if (welcomeContainer) {
+            welcomeContainer.style.display = 'none';
+        }
+        
+        // Set focus on the first button for keyboard accessibility
+        setTimeout(() => {
+            const firstButton = document.getElementById('popup-launch-game');
+            if (firstButton) {
+                firstButton.focus();
+            }
+        }, 100);
+    }
+}
+
+// Function to hide welcome popup
+function hideWelcomePopup() {
+    const welcomePopup = document.getElementById('welcome-popup');
+    if (welcomePopup) {
+        welcomePopup.style.display = 'none';
+    }
+}
+
+// Function to show about overlay
+function showAboutOverlay() {
+    const aboutOverlay = document.getElementById('about-game-overlay');
+    if (aboutOverlay) {
+        aboutOverlay.style.display = 'flex';
+    }
+}
+
+// Function to hide about overlay
+function hideAboutOverlay() {
+    const aboutOverlay = document.getElementById('about-game-overlay');
+    if (aboutOverlay) {
+        aboutOverlay.style.display = 'none';
+    }
+}

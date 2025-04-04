@@ -40,6 +40,59 @@
         <div class="floating-note" style="top: 45%; left: 5%; animation-delay: 2s;">𝄞</div>
     </div>
 
+    <!-- Welcome Popup Modal - appears on page load -->
+    <div id="welcome-popup" class="welcome-popup-overlay">
+        <div class="welcome-popup-content">
+            <div class="welcome-logo-container">
+                <img src="assets/PianoNinja_Logo.png" alt="Piano Ninja Logo">
+            </div>
+            <div class="welcome-buttons">
+                <button id="popup-launch-game" class="welcome-btn">Launch New Game</button>
+                <button id="popup-about-game" class="welcome-btn">About the Game</button>
+                <button id="popup-note-guide" class="welcome-btn">Music Note Guide</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- About the Game Overlay -->
+    <div id="about-game-overlay" class="overlay-modal" style="display: none;">
+        <div class="about-game-content">
+            <h2>About Piano Ninja</h2>
+            <div class="about-content">
+                <p>Piano Ninja is an interactive music theory game designed to help students learn:</p>
+                <ul>
+                    <li><strong>Note Recognition</strong> - Learn to quickly identify notes on the grand staff</li>
+                    <li><strong>Intervals</strong> - Master the art of identifying musical intervals</li>
+                    <li><strong>Chords</strong> - Recognize chord roots in various inversions</li>
+                </ul>
+                <p>Perfect for music students, teachers, and anyone looking to improve their music reading skills!</p>
+                
+                <div class="about-game-modes">
+                    <h3>Game Modes</h3>
+                    <div class="mode-description">
+                        <h4>Notes Mode</h4>
+                        <p>Identify notes on the grand staff from both treble and bass clefs.</p>
+                    </div>
+                    <div class="mode-description">
+                        <h4>Intervals Mode</h4>
+                        <p>Recognize musical intervals through multiple-choice questions.</p>
+                    </div>
+                    <div class="mode-description">
+                        <h4>Chords Mode</h4>
+                        <p>Identify chord roots in various positions and inversions.</p>
+                    </div>
+                </div>
+                
+                <div class="about-scoring">
+                    <h3>Scoring System</h3>
+                    <p>Points are awarded based on how quickly you answer. The faster you respond, the higher your score!</p>
+                    <p>Challenge yourself with timed modes or practice at your own pace.</p>
+                </div>
+            </div>
+            <button id="close-about-btn" class="control-btn">Close</button>
+        </div>
+    </div>
+
     <!-- Portrait mode rotation message -->
     <div class="portrait-message">
         <div class="rotation-icon">📱</div>
@@ -49,11 +102,21 @@
     </div>
 
     <div class="game-wrapper">
+        <!-- Small bottom navigation bar for secondary controls -->
+        <div class="bottom-nav">
+            <button id="setup-game-btn" class="nav-btn">New Game</button>
+            <button id="note-guide-btn" class="nav-btn">Note Guide</button>
+            <button id="about-btn" class="nav-btn">About</button>
+        </div>
+        
         <div class="welcome-container">
             <!-- Removing duplicate logo container from welcome screen -->
             
-            <button id="setup-game-btn" class="control-btn">Launch New Game</button>
-            <button id="note-guide-btn" class="control-btn">Music Note Guide</button>
+            <!-- Original buttons now hidden, functionality moved to welcome popup -->
+            <div style="display: none;">
+                <button id="setup-game-btn-original" class="control-btn">Launch New Game</button>
+                <button id="note-guide-btn-original" class="control-btn">Music Note Guide</button>
+            </div>
         </div>
         
         <div id="game-container" style="display: none;">
