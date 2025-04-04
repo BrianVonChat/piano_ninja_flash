@@ -29,10 +29,17 @@ body {
 .logo-container {
     position: relative;
     width: 100% !important;
-    max-width: 120px !important; /* Base size for game mode */
-    margin: 0 auto 5px !important;
+    max-width: 150px !important; /* Increased from 120px for better visibility */
+    margin: 0 auto 15px !important; /* Added more bottom margin */
     text-align: center;
     z-index: 1;
+    display: block; /* Ensure block display */
+}
+
+.logo-container img {
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
 /* Move floating notes to be less distracting */
@@ -831,25 +838,20 @@ footer {
 .welcome-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    text-align: center;
-    padding: 30px;
+    align-items: center;
+    width: 100%;
     max-width: 600px;
     margin: 0 auto;
+    padding: 30px;
+    text-align: center;
 }
 
-.welcome-container .logo-container {
-    max-width: 220px !important; /* Larger welcome screen logo */
-    margin-bottom: 20px !important;
-}
-
-.welcome-container button {
+.welcome-container .control-btn {
     margin: 10px;
-    min-width: 240px;
+    min-width: 200px;
     font-size: 1.2em;
     padding: 15px 25px;
-    border-radius: 8px;
 }
 
 /* Game container with active state */
@@ -935,18 +937,17 @@ footer {
 .logo-container {
     position: relative;
     width: 100% !important;
-    max-width: 120px !important; /* Base size for game mode */
-    margin: 0 auto 5px !important;
+    max-width: 150px !important; /* Increased from 120px for better visibility */
+    margin: 0 auto 15px !important; /* Added more bottom margin */
     text-align: center;
     z-index: 1;
+    display: block; /* Ensure block display */
 }
 
-/* Ensure logo image is constrained */
 .logo-container img {
-    width: 100% !important;
-    height: auto !important;
-    max-width: 100% !important;
-    display: block !important;
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
 /* Welcome screen logo size (larger) */

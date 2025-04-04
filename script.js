@@ -276,6 +276,10 @@ function showSetupModal() {
     if (document.getElementById('timer-container')) {
         document.getElementById('timer-container').style.display = 'none'; // Hide per-question timer
     }
+    
+    // Keep game container visible but hide gameplay elements
+    gameContainer.style.display = 'block';
+    
     staffArea.innerHTML = '<div id="staff-placeholder">Setup Game</div>'; // Show placeholder
     if (staffPlaceholder) staffPlaceholder.style.display = 'block';
     feedbackArea.textContent = '\u00A0'; // Clear feedback
@@ -331,7 +335,7 @@ function processSetupAndStartGame() {
     setupModal.style.display = 'none';
     
     // Show game container
-    gameContainer.style.display = 'block';
+    gameContainer.style.display = 'flex'; // Changed to flex for better layout
     
     // Add active game class to body and game container
     document.body.classList.add('game-active');
@@ -648,7 +652,9 @@ function endGame(timeExpired = false) { // Accept optional parameter
     // Show welcome screen again after scorecard is closed
     playAgainBtn.addEventListener('click', function() {
         scorecardOverlay.style.display = 'none';
-        welcomeContainer.style.display = 'flex';
+        welcomeContainer.style.display = 'flex'; // Use flex for better centering of buttons
+        welcomeContainer.style.justifyContent = 'center'; // Center buttons horizontally 
+        welcomeContainer.style.alignItems = 'center'; // Center buttons vertically
         gameContainer.style.display = 'none';
     }, { once: true });
 }
@@ -1467,9 +1473,11 @@ function toggleNoteGuide() {
     if (noteGuideOverlay.style.display === 'flex') {
         noteGuideOverlay.style.display = 'none';
         if (gameActive) {
-            gameContainer.style.display = 'block';
+            gameContainer.style.display = 'flex'; // Use flex for game container
         } else {
             welcomeContainer.style.display = 'flex';
+            welcomeContainer.style.justifyContent = 'center';
+            welcomeContainer.style.alignItems = 'center';
         }
     } else {
         noteGuideOverlay.style.display = 'flex';
